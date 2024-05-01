@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Monitoring</title>
+</head>
+<body>
+    <h1>Equipment Monitoring</h1>
+    <div>
+        <h2>Clustered Data</h2>
+        <ul>
+            {% for cluster_label, meter_codes in meter_groups.items() %}
+    <h3>{{ cluster_label }}</h3>
+    <ul>
+        {% for meter_code in meter_codes %}
+            <li>{{ meter_code }}</li>
+        {% endfor %}
+    </ul>
+{% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
