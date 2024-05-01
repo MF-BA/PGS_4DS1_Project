@@ -1,5 +1,4 @@
-from bson import ObjectId
-from flask import Flask, render_template, url_for, jsonify, request
+from flask import Flask, render_template, url_for, request, flash, redirect
 from equipement import cluster_meter_data
 from equipement import cluster_injector_data
 from pymongo import MongoClient
@@ -8,6 +7,7 @@ import pandas as pd
 from flask_pymongo import PyMongo
 
 app = Flask(__name__)
+app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["MONGO_URI"] = "mongodb://localhost:27017/PGS"
 mongo = PyMongo(app).db
 client = MongoClient('mongodb://localhost:27017/')
@@ -56,59 +56,39 @@ def equipement_monitoring():
       inj_groups[f'Cluster {cluster_label2}'] = inj_codes
    
    return render_template('Equipement_monitoring.html',meter_groups=meter_groups,meter_result = result_df,meter_data = meter_data,inj_groups=inj_groups,injector_result = result_df_inj,injector_data = injector_data)
+@app.route('/add_meter', methods=['POST'])
+def add_meter():
+    meter_code = request.form['meter_code']
+    folio_number = request.form['folio_number']
+    gross_unaccounted = request.form['gross_unaccounted']
+    
+    # Convert the folio_number date string to datetime object
+    folio_date = datetime.strptime(folio_number, '%Y-%m-%d')
+    # Format the datetime object as "YYYYMMDD"
+    formatted_folio_number = folio_date.strftime('%Y%m%d')
+    formatted_folio_number_int32 = int(formatted_folio_number)
+    # Create a dictionary representing the meter data
+    meter_data = {
+        'METER_CODE': meter_code,
+        'FOLIO_NUMBER': formatted_folio_number_int32,  # Use the formatted date
+        'GROSS_UNACCOUNTED': int(gross_unaccounted)
+    }
+    
+    try:
+        # Insert the meter data into the MongoDB collection
+        meter_collection.insert_one(meter_data)
+        message = 'Meter added successfully!'
+        #flash('Meter added successfully!', 'success')
+    except Exception as e:
+        message = 'error meter not added'
+        #flash(f'Error: {str(e)}', 'danger')
 
+    return redirect(url_for('equipement_monitoring', message_meter_add=message))
+    
+    
 @app.route('/delivery_management')
 def delivery_management():
    return render_template('Delivery_management.html')
-
-# Create Meter
-@app.route('/add_meter', methods=['POST'])
-def add_meter():
-    
-    meter_code = request.form['meter_code']
-    folio_number = request.form['folio_number']
-
-    meter_data = {
-        'meter_code': meter_code,
-        'folio_number': folio_number
-    }
-
-    # Perform validation on the data if needed
-    meter_collection.insert_one(meter_data)
-    return 'Meter added successfully!'
-
-# Read Meters
-@app.route('/meters', methods=['GET'])
-def get_meters():
-    meters = list(meter_collection.find({}, {'_id': False}))
-    return jsonify({'meters': meters}), 200
-
-@app.route('/meters/<meter_id>', methods=['GET'])
-def get_meter(meter_id):
-    meter = meter_collection.find_one({'_id': ObjectId(meter_id)}, {'_id': False})
-    if meter:
-        return jsonify({'meter': meter}), 200
-    else:
-        return jsonify({'message': 'Meter not found'}), 404
-
-# Update Meter
-@app.route('/meters/<meter_id>', methods=['PUT'])
-def update_meter(meter_id):
-    data = request.json
-    updated_meter = meter_collection.update_one({'_id': ObjectId(meter_id)}, {'$set': data})
-    if updated_meter.modified_count > 0:
-        return jsonify({'message': 'Meter updated successfully'}), 200
-    else:
-        return jsonify({'message': 'Meter not found'}), 404
-
-# Delete Meter
-@app.route('/meters/<meter_id>', methods=['DELETE'])
-def delete_meter(meter_id):
-    deleted_meter = meter_collection.delete_one({'_id': ObjectId(meter_id)})
-    if deleted_meter.deleted_count > 0:
-        return jsonify({'message': 'Meter deleted successfully'}), 200
-    else:
-        return jsonify({'message': 'Meter not found'}), 404
 
 if __name__ == "__main__":
     app.run(debug=True)
