@@ -1,4 +1,5 @@
-from flask import Flask, render_template, url_for
+from bson import ObjectId
+from flask import Flask, render_template, url_for, jsonify, request
 from equipement import cluster_meter_data
 from equipement import cluster_injector_data
 from pymongo import MongoClient
@@ -59,6 +60,55 @@ def equipement_monitoring():
 @app.route('/delivery_management')
 def delivery_management():
    return render_template('Delivery_management.html')
+
+# Create Meter
+@app.route('/add_meter', methods=['POST'])
+def add_meter():
+    
+    meter_code = request.form['meter_code']
+    folio_number = request.form['folio_number']
+
+    meter_data = {
+        'meter_code': meter_code,
+        'folio_number': folio_number
+    }
+
+    # Perform validation on the data if needed
+    meter_collection.insert_one(meter_data)
+    return 'Meter added successfully!'
+
+# Read Meters
+@app.route('/meters', methods=['GET'])
+def get_meters():
+    meters = list(meter_collection.find({}, {'_id': False}))
+    return jsonify({'meters': meters}), 200
+
+@app.route('/meters/<meter_id>', methods=['GET'])
+def get_meter(meter_id):
+    meter = meter_collection.find_one({'_id': ObjectId(meter_id)}, {'_id': False})
+    if meter:
+        return jsonify({'meter': meter}), 200
+    else:
+        return jsonify({'message': 'Meter not found'}), 404
+
+# Update Meter
+@app.route('/meters/<meter_id>', methods=['PUT'])
+def update_meter(meter_id):
+    data = request.json
+    updated_meter = meter_collection.update_one({'_id': ObjectId(meter_id)}, {'$set': data})
+    if updated_meter.modified_count > 0:
+        return jsonify({'message': 'Meter updated successfully'}), 200
+    else:
+        return jsonify({'message': 'Meter not found'}), 404
+
+# Delete Meter
+@app.route('/meters/<meter_id>', methods=['DELETE'])
+def delete_meter(meter_id):
+    deleted_meter = meter_collection.delete_one({'_id': ObjectId(meter_id)})
+    if deleted_meter.deleted_count > 0:
+        return jsonify({'message': 'Meter deleted successfully'}), 200
+    else:
+        return jsonify({'message': 'Meter not found'}), 404
 
 if __name__ == "__main__":
     app.run(debug=True)
