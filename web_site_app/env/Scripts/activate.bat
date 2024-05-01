@@ -6,7 +6,7 @@
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-@set "VIRTUAL_ENV=C:\Users\Mohamed Aziz\Desktop\FlaskDemo\env"
+@set "VIRTUAL_ENV=C:\Users\TRIEDNT\Desktop\Project_pgs\PGS_4DS1_Project\web_site_app\env"
 
 @set "VIRTUAL_ENV_PROMPT="
 @if NOT DEFINED VIRTUAL_ENV_PROMPT (

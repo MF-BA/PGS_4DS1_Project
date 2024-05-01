@@ -13,6 +13,8 @@ client = MongoClient('mongodb://localhost:27017/')
 db = client['PGS']
 meter_collection = db['Meters']
 injector_collection = db['Injectors']
+tanks =db['Tanks']
+tanks_info = db['Tanks_info']
 
 @app.route('/')
 def index():
@@ -26,6 +28,18 @@ def dashboard():
 def inventory_management():
    return render_template('Inventory_management.html')
 
+@app.route('/tanks_management')
+def tanks_management():
+    tanks_data = pd.DataFrame(list(tanks.find()))  # Retrieve orders data from MongoDB
+    return render_template('Tank_management.html', tanks_data=tanks_data)
+
+@app.route('/tanks_information')
+def tanks_information():
+    tanks_inf = pd.DataFrame(list(tanks_info.find()))  # Retrieve tanks data from MongoDB
+    return render_template('tanktest.html', tanks_inf=tanks_inf)
+
+
+
 @app.route('/orders_management')
 def orders_management():
    return render_template('Orders_management.html')
@@ -34,6 +48,7 @@ def orders_management():
 def format_datetime(value, format='%d/%m/%Y'):
     """Format a datetime object."""
     return pd.to_datetime(value, format='%Y%m%d').strftime(format)
+
 
 @app.route('/equipement_monitoring')
 def equipement_monitoring():
