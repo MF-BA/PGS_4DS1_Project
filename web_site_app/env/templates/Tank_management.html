@@ -3,29 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tanks Management</title>
+    <title>Tank Management</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Date', 'Forecast'],
+          {% for index, row in tank101.iterrows() %}
+          ['{{ row['Date'].strftime('%Y-%m-%d') }}', {{ row['Forecast'] }}],
+          {% endfor %}
+        ]);
+
+        var options = {
+          title: 'Future Predictions for Tank 101',
+          hAxis: {title: 'Date',  titleTextStyle: {color: '#333'}},
+          vAxis: {title: 'Forecast', minValue: 0}
+        };
+
+        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
 </head>
 <body>
-    <h1>Tanks Management</h1>
-    <table>
+    <h1>Tank Management</h1>
+
+    <h2>Future Predictions for Tank 101</h2>
+
+    <table border="1">
         <thead>
             <tr>
-                <th>Folio Number</th>
-                <th>Terminal Product Number</th>
-                <th>Tank Code</th>
-                <th>Closing Physical</th>
+                <th>Date</th>
+                <th>Forecast</th>
             </tr>
         </thead>
         <tbody>
-            {% for index, row in tanks_data.iterrows() %}
+            {% for index, row in tank101.iterrows() %}
             <tr>
-                <td>{{ row['FOLIO_NUMBER'] }}</td>
-                <td>{{ row['TERMINAL_PRODUCT_NUMBER'] }}</td>
-                <td>{{ row['TANK_CODE'] }}</td>
-                <td>{{ row['CLOSING_PHYSICAL'] }}</td>
+                <td>{{ row['Date'].strftime('%Y-%m-%d') }}</td>
+                <td>{{ row['Forecast'] }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <h2>Other Tank Information</h2>
+    <div id="chart_div" style="width: 100%; height: 500px;"></div>
+   
+
 </body>
 </html>

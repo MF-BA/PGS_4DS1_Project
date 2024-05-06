@@ -45,32 +45,7 @@
 
 <!---->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
-
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Date', 'Forecast'],
-          {% for index, row in tanknb.iterrows() %}
-          ['{{ row['Date'].strftime('%Y-%m-%d') }}', {{ row['Forecast'] }}],
-          {% endfor %}
-        ]);
-
-        var options = {
-          title: 'Future Predictions for Tank 101',
-            hAxis: {title: 'Date',  titleTextStyle: {color: '#01ADAF'}},
-            vAxis: {title: 'Forecast', minValue: 0},
-            colors: ['#01ADAF'], // Set color for the chart
-            legend: {position: 'none'}, // Hide legend if needed
-            
-        };
-
-        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
-        chart.draw(data, options);
-      }
-    </script>
-
+    
 </head>
 
 <body>
@@ -371,23 +346,6 @@
             </div>
             <!-- Sale & Revenue End -->
 
-
-            <!-- Sales Chart Start -->
-            <div class="container-fluid pt-4 px-4">
-                <div class="row g-4">
-                    
-                    <div class="col-sm-12 col-xl-15">
-                        <div class="bg-secondary text-center rounded p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0">Prediciton Plot</h6>
-                                
-                            </div>
-                            <div id="chart_div" style="width: 100%; height: 500px;"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Sales Chart End -->
 
 
             <!-- Recent Sales Start -->

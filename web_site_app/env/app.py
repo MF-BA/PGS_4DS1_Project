@@ -5,6 +5,7 @@ from pymongo import MongoClient
 from datetime import datetime
 import pandas as pd
 from flask_pymongo import PyMongo
+from inventory import tank_101,tank_102,tank_103,tank_104,tank_105,tank_106,tank_201,tank_202,tank_203,tank_204,tank_205,tank_206
 
 app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://localhost:27017/PGS"
@@ -33,11 +34,59 @@ def tanks_management():
     tanks_data = pd.DataFrame(list(tanks.find()))  # Retrieve orders data from MongoDB
     return render_template('Tank_management.html', tanks_data=tanks_data)
 
-@app.route('/tanks_information')
+@app.route('/all_tanks/tanks_information')
 def tanks_information():
-    tanks_inf = pd.DataFrame(list(tanks_info.find()))  # Retrieve tanks data from MongoDB
-    return render_template('tanktest.html', tanks_inf=tanks_inf)
+     # Retrieve tanks data from MongoDB and convert it into a DataFrame
+    tanks_data = pd.DataFrame(list(tanks.find()))
+    tanks_inf = pd.DataFrame(list(tanks_info.find()))
+    print(tanks_data)
+    tank101=tank_103(tanks_data)
+    return render_template('tanktest.html', tanks_inf=tanks_inf,tank101=tank101)
 
+@app.route('/all_tanks/<tank_code>')
+def tank(tank_code):
+    # Retrieve tanks data from MongoDB and convert it into a DataFrame
+    tanks_data = pd.DataFrame(list(tanks.find()))
+    tanks_inf = pd.DataFrame(list(tanks_info.find()))
+    
+    # Call the appropriate tank function based on the tank code
+    if tank_code == 'TK-101':
+        tanknb = tank_101(tanks_data)  # Assuming tank_101() takes no arguments
+    elif tank_code == 'TK-102':
+        tanknb = tank_102(tanks_data)  # Assuming tank_102() takes no arguments
+    elif tank_code == 'TK-103':
+        tanknb = tank_103(tanks_data)  # Assuming tank_102() takes no arguments
+    elif tank_code == 'TK-104':
+        tanknb = tank_104(tanks_data)  # Assuming tank_102() takes no arguments
+    elif tank_code == 'TK-105':
+        tanknb = tank_105(tanks_data)  # Assuming tank_102() takes no arguments
+    elif tank_code == 'TK-106':
+        tanknb = tank_106(tanks_data)  # Assuming tank_102() takes no arguments
+    elif tank_code == 'TK-201':
+        tanknb = tank_201(tanks_data)  # Assuming tank_102() takes no arguments
+    elif tank_code == 'TK-202':
+        tanknb = tank_202(tanks_data)  # Assuming tank_102() takes no arguments
+    elif tank_code == 'TK-203':
+        tanknb = tank_203(tanks_data)  # Assuming tank_102() takes no arguments
+    elif tank_code == 'TK-204':
+        tanknb = tank_204(tanks_data)  # Assuming tank_102() takes no arguments
+    elif tank_code == 'TK-205':
+        tanknb = tank_205(tanks_data)  # Assuming tank_102() takes no arguments
+    elif tank_code == 'TK-206':
+        tanknb = tank_206(tanks_data)  # Assuming tank_102() takes no arguments
+    # Add more conditions for other tanks if needed
+    
+    return render_template('tanktest.html', tanks_inf=tanks_inf, tanknb=tanknb)
+
+
+
+@app.route('/all_tanks')
+def all_tanks():
+     # Retrieve tanks data from MongoDB and convert it into a DataFrame
+    tanks_data = pd.DataFrame(list(tanks.find()))
+    tanks_inf = pd.DataFrame(list(tanks_info.find()))
+    print(tanks_data)
+    return render_template('All_tanks.html', tanks_inf=tanks_inf)
 
 
 @app.route('/orders_management')
