@@ -1,6 +1,5 @@
-from flask import Flask, render_template, url_for, request, flash, redirect
-from equipement import cluster_meter_data
-from equipement import cluster_injector_data
+from flask import Flask, render_template, url_for, request, redirect
+from equipement import cluster_injector_data,cluster_tanks_data,cluster_meter_data
 from pymongo import MongoClient
 from datetime import datetime
 import pandas as pd
@@ -14,6 +13,7 @@ client = MongoClient('mongodb://localhost:27017/')
 db = client['PGS']
 meter_collection = db['Meters']
 injector_collection = db['Injectors']
+tanks_leaks_collection = db['Leaks_Thefts']
 
 @app.route('/')
 def index():
@@ -54,29 +54,41 @@ def equipement_monitoring():
       cluster_data2 = result_df_inj[result_df_inj['cluster'] == cluster_label2]
       inj_codes = cluster_data2['INJECTOR_CODE'].tolist()
       inj_groups[f'Cluster {cluster_label2}'] = inj_codes
+
+   tanks_data = pd.DataFrame(list(tanks_leaks_collection.find()))
+   print(tanks_data.any)
+   result_df_tk_leaks = cluster_tanks_data(tanks_data)
+   tk_leaks_groups = {}
+   for cluster_label2 in range(5):
+      cluster_data2 = result_df_tk_leaks[result_df_tk_leaks['cluster'] == cluster_label2]
+      tk_codes = cluster_data2['TANK_CODE'].tolist()
+      tk_leaks_groups[f'Cluster {cluster_label2}'] = tk_codes
    
-   return render_template('Equipement_monitoring.html',meter_groups=meter_groups,meter_result = result_df,meter_data = meter_data,inj_groups=inj_groups,injector_result = result_df_inj,injector_data = injector_data)
+   return render_template('Equipement_monitoring.html',meter_groups=meter_groups,meter_result = result_df,meter_data = meter_data,inj_groups=inj_groups,injector_result = result_df_inj,injector_data = injector_data,tanks_groups=tk_leaks_groups,result_tanks=result_df_tk_leaks,leaks_data = tanks_data)
 @app.route('/add_meter', methods=['POST'])
 def add_meter():
     meter_code = request.form['meter_code']
     folio_number = request.form['folio_number']
     gross_unaccounted = request.form['gross_unaccounted']
     
-    # Convert the folio_number date string to datetime object
-    folio_date = datetime.strptime(folio_number, '%Y-%m-%d')
-    # Format the datetime object as "YYYYMMDD"
-    formatted_folio_number = folio_date.strftime('%Y%m%d')
-    formatted_folio_number_int32 = int(formatted_folio_number)
+
+    # Parse the original date string
+    original_date = datetime.strptime(folio_number, "%Y-%m-%d")
+
+    # Format the date as "01/01/2024"
+    formatted_date_str = original_date.strftime("%m/%d/%Y")
+    
     # Create a dictionary representing the meter data
     meter_data = {
         'METER_CODE': meter_code,
-        'FOLIO_NUMBER': formatted_folio_number_int32,  # Use the formatted date
+        'FOLIO_NUMBER': formatted_date_str,  # Use the formatted date
         'GROSS_UNACCOUNTED': int(gross_unaccounted)
     }
     
     try:
         # Insert the meter data into the MongoDB collection
         meter_collection.insert_one(meter_data)
+        
         message = 'Meter added successfully!'
         #flash('Meter added successfully!', 'success')
     except Exception as e:

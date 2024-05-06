@@ -387,12 +387,12 @@
                                       {% set first_date_in_use = meter_data_single['FOLIO_NUMBER'].min() %}
                                       {% set last_date_in_use = meter_data_single['FOLIO_NUMBER'].max() %}
                                       
-                                      <p class="text-xs font-weight-bold mb-0">{{ first_date_in_use|datetime }}</p>
+                                      <p class="text-xs font-weight-bold mb-0">{{ first_date_in_use }}</p>
                                   </td>
                                   <td class="align-middle text-center">
                                     <!-- Retrieve and display the first and last date in use -->
                                     
-                                    <p class="text-xs font-weight-bold mb-0">{{ last_date_in_use|datetime }}</p>
+                                    <p class="text-xs font-weight-bold mb-0">{{ last_date_in_use }}</p>
                                 </td>
                                   <td class="align-middle text-center text-sm">
                                       <!-- Display the status based on cluster label -->
@@ -521,11 +521,11 @@
                                       {% set inj_data_single = injector_data[injector_data['INJECTOR_CODE'] == injector_code] %}
                                       {% set first_date_in_use_inj = inj_data_single['FOLIO_NUMBER'].min() %}
                                       {% set last_date_in_use_inj = inj_data_single['FOLIO_NUMBER'].max() %}
-                                      <p class="text-xs font-weight-bold mb-0">{{ first_date_in_use_inj|datetime }}</p>
+                                      <p class="text-xs font-weight-bold mb-0">{{ first_date_in_use_inj }}</p>
                                   </td>
                                   <td class="align-middle text-center">
                                     <!-- Retrieve and display the first and last date in use -->
-                                    <p class="text-xs font-weight-bold mb-0">{{ last_date_in_use_inj|datetime }}</p>
+                                    <p class="text-xs font-weight-bold mb-0">{{ last_date_in_use_inj }}</p>
                                 </td>
                                   <td class="align-middle text-center text-sm">
                                       <!-- Display the status based on cluster label -->
@@ -561,220 +561,79 @@
         <div class="col-12">
           <div class="card mb-4">
             <div class="card-header pb-0">
-              <h6>Projects table</h6>
+              <h6>Tanks Monitoring</h6>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
               <div class="table-responsive p-0">
                 <table class="table align-items-center justify-content-center mb-0">
                   <thead>
                     <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Project</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Budget</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center opacity-7 ps-2">Completion</th>
-                      <th></th>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tank Code</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Number of days in use</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">First Day in use</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Day in use</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Details</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fixed</th>
+                        
                     </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-spotify.svg" class="avatar avatar-sm rounded-circle me-2" alt="spotify">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Spotify</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">$2,500</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">working</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">60%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-info" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="align-middle">
-                        <button class="btn btn-link text-secondary mb-0">
-                          <i class="fa fa-ellipsis-v text-xs"></i>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-invision.svg" class="avatar avatar-sm rounded-circle me-2" alt="invision">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Invision</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">$5,000</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">done</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">100%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="align-middle">
-                        <button class="btn btn-link text-secondary mb-0" aria-haspopup="true" aria-expanded="false">
-                          <i class="fa fa-ellipsis-v text-xs"></i>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-jira.svg" class="avatar avatar-sm rounded-circle me-2" alt="jira">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Jira</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">$3,400</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">canceled</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">30%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-danger" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="30" style="width: 30%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="align-middle">
-                        <button class="btn btn-link text-secondary mb-0" aria-haspopup="true" aria-expanded="false">
-                          <i class="fa fa-ellipsis-v text-xs"></i>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-slack.svg" class="avatar avatar-sm rounded-circle me-2" alt="slack">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Slack</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">$1,000</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">canceled</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">0%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width: 0%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="align-middle">
-                        <button class="btn btn-link text-secondary mb-0" aria-haspopup="true" aria-expanded="false">
-                          <i class="fa fa-ellipsis-v text-xs"></i>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-webdev.svg" class="avatar avatar-sm rounded-circle me-2" alt="webdev">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Webdev</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">$14,000</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">working</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">80%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-info" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="80" style="width: 80%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="align-middle">
-                        <button class="btn btn-link text-secondary mb-0" aria-haspopup="true" aria-expanded="false">
-                          <i class="fa fa-ellipsis-v text-xs"></i>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-xd.svg" class="avatar avatar-sm rounded-circle me-2" alt="xd">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Adobe XD</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">$2,300</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">done</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">100%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="align-middle">
-                        <button class="btn btn-link text-secondary mb-0" aria-haspopup="true" aria-expanded="false">
-                          <i class="fa fa-ellipsis-v text-xs"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
+                </thead>
+                <tbody>
+                  {% for cluster_label, tk_codes in tanks_groups.items() %}
+                      {% for tank_code in tk_codes %}
+                          <tr>
+                              <td>
+                                  <div class="d-flex px-2 py-1">
+                                      <div>
+                                          <img src="{{ url_for('static', filename='img/injector.png') }}" class="avatar avatar-equip me-3" alt="user6">
+                                      </div>
+                                      <div class="d-flex flex-column justify-content-center">
+                                          <!-- Display the meter code -->
+                                          <h6 class="mb-0 text-sm">{{ tank_code }}</h6>
+                                      </div>
+                                  </div>
+                              </td>
+                              <td class="align-middle text-center">
+                                <!-- Display the days_since_last_non_zero -->
+                                {% set tk_data_days = result_tanks[result_tanks['TANK_CODE'] == tank_code] %}
+                                {% set days_since_last_non_zero_tk = tk_data_days['last_date_less_minus20'].values[0] %}
+                                <p class="text-xs font-weight-bold mb-0">{{ days_since_last_non_zero_tk }}  Days</p>
+                             </td>
+                              <td class="align-middle text-center">
+                                  <!-- Retrieve and display the first and last date in use -->
+                                  {% set tk_data_single = leaks_data[leaks_data['TANK_CODE'] == tank_code] %}
+                                  {% set first_date_in_use_tk = tk_data_single['FOLIO_NUMBER'].min() %}
+                                  {% set last_date_in_use_tk = tk_data_single['FOLIO_NUMBER'].max() %}
+                                  <p class="text-xs font-weight-bold mb-0">{{ first_date_in_use_tk }}</p>
+                              </td>
+                              <td class="align-middle text-center">
+                                <!-- Retrieve and display the first and last date in use -->
+                                <p class="text-xs font-weight-bold mb-0">{{ last_date_in_use_tk }}</p>
+                            </td>
+                              <td class="align-middle text-center text-sm">
+                                  <!-- Display the status based on cluster label -->
+                                  {% if cluster_label == 'Cluster 0'%}
+                                      <p class="badge badge-sm bg-gradient-success">Potential Theft</p>
+                                  {% elif cluster_label == 'Cluster 1' %}
+                                      <p class="badge badge-sm bg-gradient-warning">Normal behaviour</p>
+                                  {% elif cluster_label == 'Cluster 2' %}
+                                      <p class="badge badge-sm bg-gradient-yellow">Old Theft</p>
+                                  {% elif cluster_label == 'Cluster 3' %}
+                                      <p class="badge badge-sm bg-gradient-danger">Potential Leak</p>
+                                  {% elif cluster_label == 'Cluster 4' %}
+                                      <p class="badge badge-sm bg-gradient-violet">Old Leak</p>
+                                  {% endif %}
+                              </td>
+                              <td class="align-middle text-center">
+                                <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;"><i class="fa fa-hand-paper-o text-dark me-2" aria-hidden="true"></i>Use</a>
+                              </td>
+                              <td class="align-middle text-center">
+                                <a class="btn btn-link text-success px-3 mb-0" href="javascript:;"><i class="fa fa-check-square text-success me-2" aria-hidden="true"></i>Checked</a>
+                              </td>
+                          </tr>
+                      {% endfor %}
+                  {% endfor %}
+              </tbody>                           
                 </table>
               </div>
             </div>
