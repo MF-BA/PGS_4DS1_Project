@@ -428,44 +428,58 @@
             <div class="card-header pb-0 p-3">
                 <div class="row">
                     <div class="col-6 d-flex align-items-center">
-                        <h6 class="mb-0">Use a meter</h6>
+                        <h5 class="mb-0">Add a new meter</h5>
                     </div>
-                    <div class="col-6 text-end">
-                        <button class="btn bg-gradient-primary mb-0"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add New Meter</button>
-                    </div>
+                    
                 </div>
             </div>
-        
+           <br>
             <div class="card-body p-3">
               <form action="/add_meter" method="post" id="meter-form" role="form">
-                  <div class="row">
-                      <div class="col-md-6 mb-md-0 mb-4">
-                          <div class="card card-body border card-plain border-radius-lg d-flex align-items-center flex-row">
-                            <h6>Meter Code</h6>
-                              <div class="mb-3">
-                                  <input type="text" class="form-control" id="meter_code" name="meter_code" placeholder="Meter Code" aria-label="Meter Code">
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-md-6">
-                          <div class="card card-body border card-plain border-radius-lg d-flex align-items-center flex-row">
-                             <h6>Date</h6>
-                              <div class="mb-3">
-                                  <input type="date" class="form-control" id="folio_number" name="folio_number" placeholder="Date" aria-label="Date">
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-md-6">
+                <div class="row">
+                    <!-- Meter Code -->
+                    <div class="col-md-6 mb-md-0 mb-4">
                         <div class="card card-body border card-plain border-radius-lg d-flex align-items-center flex-row">
-                          <h6>Quantity Difference</h6>
-                            <div class="mb-3">
-                                <input type="number" class="form-control" id="gross_unaccounted" name="gross_unaccounted" placeholder="quantity difference" aria-label="quantity difference">
+                            <h6 style="margin-right: 15px;">Meter Code</h6>
+                            <div class="mb-3" style="margin-bottom: 5px;">
+                                <input type="text" class="form-control" id="meter_code" name="meter_code" placeholder="Meter Code" aria-label="Meter Code">
                             </div>
                         </div>
                     </div>
-                  </div>
-                  <button type="submit" value="submit" class="btn bg-gradient-primary mt-3">Submit</button>
-              </form>
+                    <!-- Date -->
+                    <div class="col-md-6">
+                        <div class="card card-body border card-plain border-radius-lg d-flex align-items-center flex-row">
+                            <h6 style="margin-right: 15px;">Date</h6>
+                            <div class="mb-3" style="margin-bottom: 5px;">
+                                <input type="date" class="form-control" id="folio_number" name="folio_number" placeholder="Date" aria-label="Date">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quantity Difference -->
+                    <div class="col-md-6">
+                      <br>
+                        <div class="card card-body border card-plain border-radius-lg d-flex align-items-center flex-row">
+                            <h6 style="margin-right: 15px;">Quantity Difference</h6>
+                            <div class="mb-3" style="margin-bottom: 5px;">
+                                <input type="number" class="form-control" id="gross_unaccounted" name="gross_unaccounted" placeholder="Quantity Difference" aria-label="Quantity Difference">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <!-- Submit Button -->
+
+                <!-- Your button with Font Awesome icon -->
+                <button class="btn bg-gradient-primary mb-0" type="submit" value="submit">
+                 <i class="fas fa-plus"></i>&nbsp;&nbsp;Add New Meter
+                </button>
+
+              
+            </form>
+            
+            
+            
               {{ message_meter_add }}
           </div>
       
