@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Orders Prediction</title>
+    <!-- Include any CSS stylesheets here -->
+</head>
+<body>
+    <h1>Customer {{ customer_number }} Orders Prediction</h1>
+    
+    {% for plot_data in plots_data %}
+        <h2>Product Number: {{ plot_data.product_number }}</h2>
+        
+        <!-- Plot for historical data -->
+        <div id="plot-{{ plot_data.product_number }}-historical"></div>
+
+        <!-- Plot for future predictions -->
+        <div id="plot-{{ plot_data.product_number }}-predictions"></div>
+    {% endfor %}
+    
+    <!-- Include any JavaScript scripts here -->
+</body>
+</html>
