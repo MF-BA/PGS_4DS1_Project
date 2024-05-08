@@ -1,12 +1,18 @@
 import pandas as pd
 from statsmodels.tsa.statespace.sarimax import SARIMAX
- 
-def generate_predictions(xts_data, customer_number, product_number):
-    # Extract xts data for the given customer and product number
-    xts_series = xts_data[f"xts_data_customer_{customer_number}_product_number_{product_number}"]
-    
-    # Resample the data to weekly frequency
-    product_data_weekly = xts_series.resample('W').sum()
+
+def orders_prediction(gainloss, customer_number, product_number):
+    # Filter the DataFrame for entries with the specified customer and product number
+    orders = gainloss[(gainloss['CUSTOMER_NUMBER'] == customer_number) & (gainloss['TERMINAL_PRODUCT_NUMBER'] == product_number)]
+
+    # Convert 'FOLIO_NUMBER' to datetime if it's not already in datetime format
+    orders['FOLIO_NUMBER'] = pd.to_datetime(orders['FOLIO_NUMBER'])
+
+    # Set 'FOLIO_NUMBER' as the index
+    orders.set_index('FOLIO_NUMBER', inplace=True)
+
+    # Resample the data to weekly frequency and sum the 'ORDERED_QUANTITY' for each period
+    product_data_weekly = orders['ORDERED_QUANTITY'].resample('W').sum()
 
     # Initial training data
     train_data = product_data_weekly
@@ -26,9 +32,9 @@ def generate_predictions(xts_data, customer_number, product_number):
             model_fit = model.fit()
             pred = model_fit.forecast(steps=1)  
             future_predictions.loc[end_date] = pred[0]  
-            train_data = train_data.append(pd.Series(pred[0], index=[end_date]))  
+            train_data = train_data._append(pd.Series(pred[0], index=[end_date]))  
         except Exception as e:
             print("Error occurred for date:", end_date)
             print("Error details:", str(e))
 
-    return train_data, future_predictions
+    return future_predictions

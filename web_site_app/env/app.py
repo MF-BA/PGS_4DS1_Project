@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, request
 from equipement import cluster_meter_data
 from equipement import cluster_injector_data
-from order import generate_predictions
+from orders import orders_prediction
 
 
 from pymongo import MongoClient
@@ -64,6 +64,19 @@ def delivery_management():
    return render_template('Delivery_management.html')
 
 
+
+
+
+@app.route('/orders_prediction_test')
+def get_orders_prediction():
+    orders_data = pd.DataFrame(list(Orders.find()))  
+    customer_number = 7 
+    product_number = 4 
+    future_predictions = orders_prediction(orders_data, customer_number, product_number)  
+    print("future_predictions:", future_predictions)
+    return render_template('testorder.html', orders_data=orders_data, future_predictions=future_predictions)
+
+
 @app.route('/orders_management')
 def orders_management():
     orders_data = pd.DataFrame(list(Orders.find()))  
@@ -72,75 +85,6 @@ def orders_management():
     return render_template('Orders_management.html', orders_data=orders_data, datetime=datetime)
 
 
-@app.route('/customer_orders_prediction', methods=['GET', 'POST'])
-def customer_orders_prediction():
-    if request.method == 'POST':
-        
-        orders_data = pd.DataFrame(list(Orders.find())) 
-
-        customer_number = int(request.form['customer_number'])
-        orders_data['FOLIO_NUMBER']= pd.to_datetime(orders_data['FOLIO_NUMBER'])
-
-        # Retrieve data for the selected customer number
-        customer_data = orders_data[orders_data['CUSTOMER_NUMBER'] == customer_number]
-        print(customer_data)
-
-        # Create a dictionary to store xts data for each product number dynamically
-        xts_data = {}
-        
-        # Iterate over unique terminal product numbers for the current customer
-        for product_number in customer_data['TERMINAL_PRODUCT_NUMBER'].unique():
-            # Filter data for the current product number
-            filtered_data = customer_data[customer_data['TERMINAL_PRODUCT_NUMBER'] == product_number].drop(columns=['TERMINAL_PRODUCT_NUMBER'])
-            print(filtered_data)
-
-            # Create xts dynamically for each product number
-            xts_variable_name = f"xts_data_customer_{customer_number}_product_number_{product_number}"
-            xts_data[product_number] = pd.Series(filtered_data['ORDERED_QUANTITY'].values, index=filtered_data['FOLIO_NUMBER'].values)
-
-            print("Constructed key:", xts_variable_name)
-
-        # Perform SARIMA prediction for each product number
-        plots_data = []
-        for product_number, xts_series in xts_data.items():
-            train_data, future_predictions = generate_predictions(xts_series, customer_number, product_number)
-            plots_data.append({'product_number': product_number, 'train_data': train_data, 'future_predictions': future_predictions})
-
-        # Render the template with the plots data
-        return render_template('Customer_orders_prediction.html', customer_number=customer_number, plots_data=plots_data)
-
-    # Render the form for user input
-    return render_template('Customer_orders_input.html')
-
-@app.route('/customer_orders_predictiontest', methods=['GET', 'POST'])
-def customer_orders_prediction_test():
-    if request.method == 'POST':
-        
-        orders_data = pd.DataFrame(list(Orders.find())) 
-
-        customer_number = int(request.form['customer_number'])
-        orders_data['FOLIO_NUMBER']= pd.to_datetime(orders_data['FOLIO_NUMBER'])
-        customer_data = orders_data[orders_data['CUSTOMER_NUMBER'] == customer_number]
-        print(customer_data)
-        xts_data = {}
-        
-        filtered_data = customer_data[customer_data['TERMINAL_PRODUCT_NUMBER'] == 4].drop(columns=['TERMINAL_PRODUCT_NUMBER'])
-        print(filtered_data)
-
-        xts_variable_name = f"xts_data_customer_{customer_number}_product_number_{product_number}"
-        xts_data[product_number] = pd.Series(filtered_data['ORDERED_QUANTITY'].values, index=filtered_data['FOLIO_NUMBER'].values)
-        print("Constructed key:", xts_variable_name)
-
-        # Perform SARIMA prediction for each product number
-        plots_data = []
-        for product_number, xts_series in xts_data.items():
-            train_data, future_predictions = generate_predictions(xts_series, customer_number, product_number)
-            plots_data.append({'product_number': product_number, 'train_data': train_data, 'future_predictions': future_predictions})
-        # Render the template with the plots data
-        return render_template('Customer_orders_prediction.html', customer_number=customer_number, plots_data=plots_data)
-
-    # Render the form for user input
-    return render_template('Customer_orders_input.html')
 
 
 if __name__ == "__main__":
