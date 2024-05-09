@@ -3536,6 +3536,7 @@ textarea.form-control.is-invalid {
   transition: all 0.15s ease-in;
 }
 
+
 @media (prefers-reduced-motion: reduce) {
   .btn {
     transition: none;
@@ -8779,6 +8780,10 @@ fieldset:disabled .btn {
   margin-right: 0.5rem !important;
 }
 
+.icon-size-button {
+  size: 15px !important;
+}
+
 .me-3 {
   margin-right: 1rem !important;
 }
@@ -9817,6 +9822,10 @@ fieldset:disabled .btn {
 }
 
 .text-success {
+  color: #82d616 !important;
+}
+
+.text-blue {
   color: #82d616 !important;
 }
 

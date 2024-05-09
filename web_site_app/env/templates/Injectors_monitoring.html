@@ -226,7 +226,7 @@
       <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Home</a></li>
+            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{url_for('equipement_monitoring')}}">Home</a></li>
             <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Equipement Monitoring</li>
           </ol>
           <h6 class="font-weight-bolder mb-0">Equipement</h6>
@@ -336,169 +336,129 @@
         </div>
       </div>
     </nav>
-
-    <div class="row">
-
-      <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
-
-        <div class="card">
-          <div class="card-body p-3">
-            <div class="row">
-              <div class="card-body position-relative z-index-1 d-flex flex-column h-50 p-3">
-                <a href="{{url_for('meters_monitoring')}}" class="btn bg-gradient-primary mb-0 d-flex flex-column align-items-center justify-content-center">
-              <div class="col-8">
+    <!-- End Navbar -->
   
-                <div class="numbers">
-                  <h5 class="text-white mb-0 text-capitalize font-weight-bolder">Meters Monitoring</h5>
-                </div>
-              </div>
-              <div class="col-4 text-end">
-                
-                  <img src="{{ url_for('static', filename='img/meter_page3.png')}}" class="navbar-brand-img h-100" style="max-width: 100%; height: auto;">
-             
-              </div>
-              </a>
-             </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-      
-
-    <div class="col-xl-4 col-sm-6 mb-xl-0">
-      
-      <div class="card">
-        <div class="card-body p-3">
-          <div class="row">
-            <div class="card-body position-relative z-index-1 d-flex flex-column h-50 p-3">
-            <a href="{{url_for('injectors_monitoring')}}" class="btn bg-gradient-primary mb-0 d-flex flex-column align-items-center justify-content-center">
-            <div class="col-8">
-
-              <div class="numbers">
-                <h5 class="text-white mb-0 text-capitalize font-weight-bolder">Injectors Monitoring</h5>
-              </div>
-            </div>
-            <div class="col-4 text-end">
-              
-                <img src="{{ url_for('static', filename='img/injector_page.png')}}" class="navbar-brand-img h-100" style="max-width: 100%; height: auto;">
-           
-            </div>
-          </a>
-           </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="col-xl-4 col-sm-6 mb-xl-0">
-      <div class="card">
-        <div class="card-body p-3">
-          <div class="row">
-            <div class="card-body position-relative z-index-1 d-flex flex-column h-50 p-3">
-            <a href="{{url_for('tanks_monitoring')}}" class="btn bg-gradient-primary mb-0 d-flex flex-column align-items-center justify-content-center">
-            <div class="col-8">
-
-              <div class="numbers">
-                <h5 class="text-white mb-0 text-capitalize font-weight-bolder">Tanks Monitoring</h5>
-              </div>
-            </div>
-            <div class="col-4 text-end">
-              
-                <img src="{{ url_for('static', filename='img/tanks_page.png')}}" class="navbar-brand-img h-100" style="max-width: 100%; height: auto;">
-           
-            </div>
-          </a>
-           </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-
-          <div class="row mt-4">
-
-            <div class="col-lg-6 mb-lg-0 mb-4">
-
-          <div class="card h-100">
-            <div class="card-header pb-0 p-3">
-                <div class="row">
-                    <div class="col-6 d-flex align-items-center">
-                        <h5 class="mb-0">Add a new meter</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body p-3 d-flex flex-column">
-                <form action="/add_meter" method="post" id="meter-form" role="form">
-                    <!-- Meter Code -->
-                    <div class="mb-3">
-                        <h6>Meter Code</h6>
-                        <input type="text" class="form-control" id="meter_code" name="meter_code" placeholder="Meter Code" aria-label="Meter Code">
-                    </div>
-                    <!-- Date -->
-                    <div class="mb-3">
-                        <h6>Date</h6>
-                        <input type="date" class="form-control" id="folio_number" name="folio_number" placeholder="Date" aria-label="Date">
-                    </div>
-                    <!-- Quantity Difference -->
-                    <div class="mb-3">
-                        <h6>Quantity Difference</h6>
-                        <input type="number" class="form-control" id="gross_unaccounted" name="gross_unaccounted" placeholder="Quantity Difference" aria-label="Quantity Difference">
-                    </div>
-                    <!-- Submit Button -->
-                    <button class="btn bg-gradient-primary mb-0" type="submit" value="submit">
-                        <i class="fas fa-plus"></i>&nbsp;&nbsp;Add New Meter
-                    </button>
-                </form>
-                {{ message_meter_add }}
-            </div>
-        </div>
-      </div>
-        
-
-      <div class="col-lg-6">
-        <div class="card h-100">
-          <div class="card-header pb-0 p-3">
-              <div class="row">
-                  <div class="col-6 d-flex align-items-center">
-                      <h5 class="mb-0">Add a new Injector</h5>
-                  </div>
-              </div>
-          </div>
-          <div class="card-body p-3 d-flex flex-column">
-              <form action="/add_injector" method="post" id="injector-form" role="form">
-                  <!-- Meter Code -->
-                  <div class="mb-3">
-                      <h6>Injector Code</h6>
-                      <input type="text" class="form-control" id="injector_code" name="injector_code" placeholder="Injector Code" aria-label="Injector Code">
-                  </div>
-                  <!-- Date -->
-                  <div class="mb-3">
-                      <h6>Date</h6>
-                      <input type="date" class="form-control" id="folio_number_inj" name="folio_number_inj" placeholder="Date" aria-label="Date">
-                  </div>
-                  <!-- Quantity Difference -->
-                  <div class="mb-3">
-                      <h6>Quantity Difference</h6>
-                      <input type="number" class="form-control" id="frac_unaccounted" name="frac_unaccounted" placeholder="Quantity Difference" aria-label="Quantity Difference">
-                  </div>
-                  <!-- Submit Button -->
-                  <button class="btn bg-gradient-primary mb-0" type="submit" value="submit">
-                      <i class="fas fa-plus"></i>&nbsp;&nbsp;Add New Injector
-                  </button>
-              </form>
-              {{ message_injector_add }}
-          </div>
-      </div>
-      </div>
-    </div>
-         <br>
        
         
 
+          <div class="card mb-4">
+            <div class="card-header pb-0">
+              <h6>Injectors Monitoring</h6>
+            </div>
+            <div class="card-body px-0 pt-0 pb-2">
+              <div class="table-responsive p-0">
+                <div style="overflow-x: auto;">
+                  <table class="table align-items-center mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Injector Code</th>
+                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Number of days in use</th>
+                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">First Day in use</th>
+                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Day in use</th>
+                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Use Meter</th>
+                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fix Meter</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                      {% for cluster_label, inj_codes in inj_groups.items() %}
+                          {% for injector_code in inj_codes %}
+                              <tr>
+                                  <td>
+                                      <div class="d-flex px-2 py-1">
+                                          <div>
+                                              <img src="{{ url_for('static', filename='img/injector.png') }}" class="avatar avatar-equip me-3" alt="user6">
+                                          </div>
+                                          <div class="d-flex flex-column justify-content-center">
+                                              <!-- Display the meter code -->
+                                              <h6 class="mb-0 text-sm">{{ injector_code }}</h6>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  <td class="align-middle text-center">
+                                    <!-- Display the days_since_last_non_zero -->
+                                    {% set inj_data_days = injector_result[injector_result['INJECTOR_CODE'] == injector_code] %}
+                                    {% set days_since_last_non_zero_inj = inj_data_days['last_date_non_zero'].values[0] %}
+                                    <p class="text-xs font-weight-bold mb-0">{{ days_since_last_non_zero_inj }}  Days</p>
+                                 </td>
+                                  <td class="align-middle text-center">
+                                      <!-- Retrieve and display the first and last date in use -->
+                                      {% set inj_data_single = injector_data[injector_data['INJECTOR_CODE'] == injector_code] %}
+                                      {% set first_date_in_use_inj = inj_data_single['FOLIO_NUMBER'].min() %}
+                                      {% set last_date_in_use_inj = inj_data_single['FOLIO_NUMBER'].max() %}
+                                      <p class="text-xs font-weight-bold mb-0">{{ first_date_in_use_inj }}</p>
+                                  </td>
+                                  <td class="align-middle text-center">
+                                    <!-- Retrieve and display the first and last date in use -->
+                                    <p class="text-xs font-weight-bold mb-0">{{ last_date_in_use_inj }}</p>
+                                </td>
+                                  <td class="align-middle text-center text-sm">
+                                      <!-- Display the status based on cluster label -->
+                                      {% if cluster_label == 'Cluster 0' %}
+                                          <p class="badge badge-sm bg-gradient-success">Healthy</p>
+                                      {% elif cluster_label == 'Cluster 1' %}
+                                          <p class="badge badge-sm bg-gradient-warning">Operational</p>
+                                      {% elif cluster_label == 'Cluster 2' %}
+                                          <p class="badge badge-sm bg-gradient-yellow">Requires inspection</p>
+                                      {% elif cluster_label == 'Cluster 3' %}
+                                          <p class="badge badge-sm bg-gradient-danger">Non-Operational</p>
+                                      {% endif %}
+                                  </td>
+                                  <td class="align-middle text-center">
+                                    <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;"><i class="fa fa-hand-paper-o text-dark me-2" aria-hidden="true"></i>Use</a>
+                                  </td>
+                                  <td class="align-middle text-center">
+                                    <a class="btn btn-link text-success px-3 mb-0" href="javascript:;"><i class="fa fa-check-square text-success me-2" aria-hidden="true"></i>Checked</a>
+                                  </td>
+                              </tr>
+                          {% endfor %}
+                      {% endfor %}
+                  </tbody>                                  
+                </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    <div class="card mb-4">
+      <div class="card-header pb-0 p-3">
+          <div class="row">
+              <div class="col-6 d-flex align-items-center">
+                  <h5 class="mb-0">Add a new Injector</h5>
+              </div>
+          </div>
+      </div>
+      <div class="card-body p-3 d-flex flex-column">
+          <form action="/add_injector" method="post" id="injector-form" role="form">
+              <!-- Meter Code -->
+              <div class="mb-3">
+                  <h6>Injector Code</h6>
+                  <input type="text" class="form-control" id="injector_code" name="injector_code" placeholder="Injector Code" aria-label="Injector Code">
+              </div>
+              <!-- Date -->
+              <div class="mb-3">
+                  <h6>Date</h6>
+                  <input type="date" class="form-control" id="folio_number_inj" name="folio_number_inj" placeholder="Date" aria-label="Date">
+              </div>
+              <!-- Quantity Difference -->
+              <div class="mb-3">
+                  <h6>Quantity Difference</h6>
+                  <input type="number" class="form-control" id="frac_unaccounted" name="frac_unaccounted" placeholder="Quantity Difference" aria-label="Quantity Difference">
+              </div>
+              <!-- Submit Button -->
+              <button class="btn bg-gradient-primary mb-0" type="submit" value="submit">
+                  <i class="fas fa-plus"></i>&nbsp;&nbsp;Add New Injector
+              </button>
+          </form>
+          {{ message_injector_add }}
+      </div>
+  </div>
+
+      
       <footer class="footer pt-3  ">
         <div class="container-fluid">
           <div class="row align-items-center justify-content-lg-between">

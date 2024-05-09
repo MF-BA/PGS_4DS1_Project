@@ -36,8 +36,8 @@ def format_datetime(value, format='%d/%m/%Y'):
     """Format a datetime object."""
     return pd.to_datetime(value, format='%Y%m%d').strftime(format)
 
-@app.route('/equipement_monitoring')
-def equipement_monitoring():
+@app.route('/meters_monitoring')
+def meters_monitoring():
    meter_data = pd.DataFrame(list(meter_collection.find()))
    result_df = cluster_meter_data(meter_data)
    meter_groups = {}
@@ -46,6 +46,11 @@ def equipement_monitoring():
       meter_codes = cluster_data['METER_CODE'].tolist()
       meter_groups[f'Cluster {cluster_label}'] = meter_codes
 
+   return render_template('Meters_monitoring.html',meter_groups=meter_groups,meter_result = result_df,meter_data = meter_data)
+
+
+@app.route('/injectors_monitoring')
+def injectors_monitoring():
    injector_data = pd.DataFrame(list(injector_collection.find()))
    print(injector_data.any)
    result_df_inj = cluster_injector_data(injector_data)
@@ -55,6 +60,10 @@ def equipement_monitoring():
       inj_codes = cluster_data2['INJECTOR_CODE'].tolist()
       inj_groups[f'Cluster {cluster_label2}'] = inj_codes
 
+   return render_template('Injectors_monitoring.html',inj_groups=inj_groups,injector_result = result_df_inj,injector_data = injector_data,)
+
+@app.route('/tanks_monitoring')
+def tanks_monitoring():
    tanks_data = pd.DataFrame(list(tanks_leaks_collection.find()))
    print(tanks_data.any)
    result_df_tk_leaks = cluster_tanks_data(tanks_data)
@@ -63,8 +72,15 @@ def equipement_monitoring():
       cluster_data2 = result_df_tk_leaks[result_df_tk_leaks['cluster'] == cluster_label2]
       tk_codes = cluster_data2['TANK_CODE'].tolist()
       tk_leaks_groups[f'Cluster {cluster_label2}'] = tk_codes
-   
-   return render_template('Equipement_monitoring.html',meter_groups=meter_groups,meter_result = result_df,meter_data = meter_data,inj_groups=inj_groups,injector_result = result_df_inj,injector_data = injector_data,tanks_groups=tk_leaks_groups,result_tanks=result_df_tk_leaks,leaks_data = tanks_data)
+
+   return render_template('Tanks_monitoring.html',tanks_groups=tk_leaks_groups,result_tanks=result_df_tk_leaks,leaks_data = tanks_data)
+
+
+@app.route('/equipement_monitoring')
+def equipement_monitoring():
+
+   return render_template('Equipement_monitoring.html')
+
 @app.route('/add_meter', methods=['POST'])
 def add_meter():
     meter_code = request.form['meter_code']
@@ -135,4 +151,5 @@ def delivery_management():
    return render_template('Delivery_management.html')
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    '''app.run(debug=True)'''
+    app.run(host="0.0.0.0")
