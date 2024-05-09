@@ -3536,6 +3536,7 @@ textarea.form-control.is-invalid {
   transition: all 0.15s ease-in;
 }
 
+
 @media (prefers-reduced-motion: reduce) {
   .btn {
     transition: none;
@@ -5787,7 +5788,19 @@ fieldset:disabled .btn {
   vertical-align: baseline;
   border-radius: 0.45rem;
 }
-
+.badge-equip {
+  display: inline-block;
+  padding: 0.55em 0.9em;
+  font-size: 1em;
+  font-weight: 700;
+  width: 130px;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 1.75rem;
+}
 .badge:empty {
   display: none;
 }
@@ -8728,7 +8741,9 @@ fieldset:disabled .btn {
 .mt-4 {
   margin-top: 1.5rem !important;
 }
-
+.mR-4 {
+  margin-right: 30rem !important;
+}
 .mt-5 {
   margin-top: 3rem !important;
 }
@@ -8775,6 +8790,10 @@ fieldset:disabled .btn {
 
 .me-2 {
   margin-right: 0.5rem !important;
+}
+
+.icon-size-button {
+  size: 15px !important;
 }
 
 .me-3 {
@@ -9815,6 +9834,10 @@ fieldset:disabled .btn {
 }
 
 .text-success {
+  color: #82d616 !important;
+}
+
+.text-blue {
   color: #82d616 !important;
 }
 
@@ -20108,6 +20131,10 @@ label,
 .bg-gradient-yellow {
   background-image: linear-gradient(45deg, #ffff00 0%, #ffd700 100%);
   -webkit-text-fill-color: #000;
+}
+.bg-gradient-violet {
+  background-image: linear-gradient(45deg, #8500FF 0%, #9467BD 100%);
+  -webkit-text-fill-color: #fff;
 }
 .bg-gradient-light {
   background-image: linear-gradient(310deg, #CED4DA 0%, #EBEFF4 100%);
