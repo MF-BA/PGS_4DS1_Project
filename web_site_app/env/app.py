@@ -97,7 +97,39 @@ def add_meter():
 
     return redirect(url_for('equipement_monitoring', message_meter_add=message))
     
+@app.route('/add_injector', methods=['POST'])
+def add_injector():
+    injector_code = request.form['injector_code']
+    folio_number = request.form['folio_number_inj']
+    frac_unaccounted = request.form['frac_unaccounted']
     
+
+    # Parse the original date string
+    original_date = datetime.strptime(folio_number, "%Y-%m-%d")
+
+    # Format the date as "01/01/2024"
+    formatted_date_str = original_date.strftime("%m/%d/%Y")
+    
+    # Create a dictionary representing the meter data
+    injector_data = {
+        'INJECTOR_CODE': injector_code,
+        'FOLIO_NUMBER': formatted_date_str,  # Use the formatted date
+        'FRAC_UNACCOUNTED': int(frac_unaccounted)
+    }
+    
+    try:
+        # Insert the meter data into the MongoDB collection
+        injector_collection.insert_one(injector_data)
+        
+        message = 'Injector added successfully!'
+        #flash('Meter added successfully!', 'success')
+    except Exception as e:
+        message = 'error injector not added'
+        #flash(f'Error: {str(e)}', 'danger')
+
+    return redirect(url_for('equipement_monitoring', message_injector_add=message))
+
+
 @app.route('/delivery_management')
 def delivery_management():
    return render_template('Delivery_management.html')

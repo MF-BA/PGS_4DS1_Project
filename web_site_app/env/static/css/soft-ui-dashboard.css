@@ -8728,7 +8728,9 @@ fieldset:disabled .btn {
 .mt-4 {
   margin-top: 1.5rem !important;
 }
-
+.mR-4 {
+  margin-right: 30rem !important;
+}
 .mt-5 {
   margin-top: 3rem !important;
 }

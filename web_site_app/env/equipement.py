@@ -113,8 +113,11 @@ def cluster_injector_data(merged_injector_data):
 
     test_merged_injector = merged_injector_data[['INJECTOR_CODE','FOLIO_NUMBER','FRAC_UNACCOUNTED']]
     # Convert data types
-    test_merged_injector['FOLIO_NUMBER'] = pd.to_datetime(test_merged_injector['FOLIO_NUMBER'])
-    
+    test_merged_injector.loc[:, 'FOLIO_NUMBER'] = pd.to_datetime(test_merged_injector['FOLIO_NUMBER'])
+    test_merged_injector.loc[:, 'FRAC_UNACCOUNTED'] = test_merged_injector['FRAC_UNACCOUNTED'].astype(int)
+
+    test_merged_injector = test_merged_injector.sort_values(by ='INJECTOR_CODE')
+    test_merged_injector.reset_index(inplace=True)
 
     # Group by 'INJECTOR_CODE'
     grouped_injector = test_merged_injector.groupby('INJECTOR_CODE')
@@ -125,26 +128,11 @@ def cluster_injector_data(merged_injector_data):
 
     # Iterate over groups
     for injector_code, group_data in grouped_injector:
-        
         # Find the row with the maximum FOLIO_NUMBER where FRAC_UNACCOUNTED is greater than 20 or less than -20
         filtered_group_data = group_data[(group_data['FRAC_UNACCOUNTED'] > 20) | (group_data['FRAC_UNACCOUNTED'] < -20)]
         if not filtered_group_data.empty:
            max_folio_row_inj = filtered_group_data['FOLIO_NUMBER'].idxmax()
-    
-           timestamp_str = str(group_data.loc[max_folio_row_inj, 'FOLIO_NUMBER'])
-
-           timestamp = timestamp_str[-8:]
-
-           year = timestamp[:4]
-           month = timestamp[4:6]
-           day = timestamp[6:]
- 
-           formatted_date_str = f"{year}-{month}-{day}"
-
-
-           last_non_zero_date = datetime.strptime(formatted_date_str, "%Y-%m-%d")
- 
-           days_since_last_non_zero = (datetime.now() - last_non_zero_date).days
+           days_since_last_non_zero = (datetime.now() - group_data.loc[max_folio_row_inj, 'FOLIO_NUMBER']).days
     
 
            # Calculate successive non-zero count and sum
