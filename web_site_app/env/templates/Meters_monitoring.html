@@ -356,7 +356,6 @@
                             <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Day in use</th>
                             <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                             <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Use Meter</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fix Meter</th>
                             
                         </tr>
                     </thead>
@@ -397,24 +396,17 @@
                                   <td class="align-middle text-center text-sm">
                                       <!-- Display the status based on cluster label -->
                                       {% if cluster_label == 'Cluster 0' %}
-                                          <p class="badge badge-sm bg-gradient-success">Healthy</p>
+                                          <p class="badge-equip bg-gradient-success">Operational</p>
                                       {% elif cluster_label == 'Cluster 1' %}
-                                          <p class="badge badge-sm bg-gradient-warning">Operational</p>
+                                          <p class="badge-equip bg-gradient-success">Operational</p>
                                       {% elif cluster_label == 'Cluster 2' %}
-                                          <p class="badge badge-sm bg-gradient-yellow">Requires inspection</p>
+                                          <p class="badge-equip bg-gradient-yellow">Inspection</p>
                                       {% elif cluster_label == 'Cluster 3' %}
-                                          <p class="badge badge-sm bg-gradient-danger">Non-Operational</p>
+                                          <p class="badge-equip bg-gradient-danger">Disfunction</p>
                                       {% endif %}
                                   </td>
                                   <td class="align-middle text-center">
                                     <a class="btn btn-sm btn-round bg-gradient-primary mb-0" href="javascript:;"><i class="fa fa-hand-paper-o a-2x" aria-hidden="true"></i>&nbsp;&nbsp;Use</a>
-                                  </td>
-                                  <td class="align-middle text-center">
-                                    {% if cluster_label == 'Cluster 0' %}
-                                    <a class="btn btn-link text-success px-3 mb-0" href="javascript:;"><i class="fa fa-check-square text-success me-2" aria-hidden="true"></i>Fixed</a>
-                                    {% elif cluster_label == 'Cluster 3' %}
-                                    <button class="btn btn-sm btn-round mb-0 me-1 bg-gradient-dark" href="javascript:;"><i class="fa fa-wrench me-2" aria-hidden="true"></i>&nbsp;&nbsp;Fix</button>
-                                    {% endif %}
                                   </td>
                               </tr>
                           {% endfor %}

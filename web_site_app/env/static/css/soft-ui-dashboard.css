@@ -5788,7 +5788,19 @@ fieldset:disabled .btn {
   vertical-align: baseline;
   border-radius: 0.45rem;
 }
-
+.badge-equip {
+  display: inline-block;
+  padding: 0.55em 0.9em;
+  font-size: 1em;
+  font-weight: 700;
+  width: 130px;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 1.75rem;
+}
 .badge:empty {
   display: none;
 }

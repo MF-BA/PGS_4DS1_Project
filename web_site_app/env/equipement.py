@@ -17,7 +17,6 @@ def cluster_meter_data(merged_meter_data):
      
     # Group by 'METER_CODE'
     grouped_meter = test_merged_meter.groupby('METER_CODE')
-    
 
     # Initialize variables
     result_data = []
@@ -25,12 +24,12 @@ def cluster_meter_data(merged_meter_data):
 
     # Iterate over groups
     for meter_code, group_data in grouped_meter:
-        # Find the row with the maximum FOLIO_NUMBER where GROSS_UNACCOUNTED is greater than 20
-        max_folio_row = group_data[(group_data['GROSS_UNACCOUNTED'] > 20) | (group_data['GROSS_UNACCOUNTED'] < -20)]['FOLIO_NUMBER'].idxmax()
+        group_data.reset_index(drop=True, inplace=True)
+        # Find the row with the maximum FOLIO_NUMBER where FRAC_UNACCOUNTED is greater than 20 or less than -20
+        filtered_group_data = group_data[(group_data['GROSS_UNACCOUNTED'] > 20) | (group_data['GROSS_UNACCOUNTED'] < -20)]
+        if not filtered_group_data.empty:
+            max_folio_row = filtered_group_data['FOLIO_NUMBER'].idxmax()
 
-        if pd.notnull(max_folio_row):
-            
- 
             days_since_last_non_zero = (datetime.now() - group_data.loc[max_folio_row, 'FOLIO_NUMBER']).days
 
             # Calculate successive non-zero count
@@ -54,7 +53,8 @@ def cluster_meter_data(merged_meter_data):
                 'successive_non_zero_abs_sum': successive_non_zero_sum,
                 'last_date_non_zero': days_since_last_non_zero,
                 'repaired': repaired
-            })
+            }) 
+
             current_indices = set(group_data.index)
             original_indices.update(current_indices)
         else:

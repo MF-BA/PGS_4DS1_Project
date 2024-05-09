@@ -23,6 +23,10 @@ def index():
 def dashboard():
    return render_template('Dashboard.html')
 
+@app.route('/sign_up')
+def sign_up():
+    return render_template('sign-up.html')
+
 @app.route('/inventory_management')
 def inventory_management():
    return render_template('Inventory_management.html')
