@@ -5,7 +5,8 @@ from pymongo import MongoClient
 from datetime import datetime
 import pandas as pd
 from flask_pymongo import PyMongo
-from inventory import tank_101,tank_102,tank_103,tank_104,tank_105,tank_106,tank_201,tank_202,tank_203,tank_204,tank_205,tank_206
+from inventory import tank_101,tank_102,tank_103,tank_104,tank_105,tank_106,tank_201,tank_202,tank_203,tank_204,tank_205,tank_206,tank_301,tank_302,tank_303,tank_305,scrape_weather_data
+from datetime import datetime
 
 app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://localhost:27017/PGS"
@@ -48,7 +49,29 @@ def tank(tank_code):
     # Retrieve tanks data from MongoDB and convert it into a DataFrame
     tanks_data = pd.DataFrame(list(tanks.find()))
     tanks_inf = pd.DataFrame(list(tanks_info.find()))
-    
+     # Define a dictionary mapping tank codes to tank names
+    tank_names = {
+        'TK-101': 'Tank 101',
+        'TK-102': 'Tank 102',
+        'TK-103': 'Tank 103',
+        'TK-104': 'Tank 104',
+        'TK-105': 'Tank 105',
+        'TK-106': 'Tank 106',
+        'TK-201': 'Tank 201',
+        'TK-202': 'Tank 202',
+        'TK-203': 'Tank 203',
+        'TK-204': 'Tank 204',
+        'TK-205': 'Tank 205',
+        'TK-206': 'Tank 206',
+        'TK-301': 'Tank 301',
+        'TK-302': 'Tank 302',
+        'TK-303': 'Tank 303'
+        # Add more tank names as needed
+    }
+ 
+
+    # Get the name of the selected tank
+    tank_name = tank_names.get(tank_code, 'Unknown Tank')
     # Call the appropriate tank function based on the tank code
     if tank_code == 'TK-101':
         tanknb = tank_101(tanks_data)  # Assuming tank_101() takes no arguments
@@ -74,9 +97,59 @@ def tank(tank_code):
         tanknb = tank_205(tanks_data)  # Assuming tank_102() takes no arguments
     elif tank_code == 'TK-206':
         tanknb = tank_206(tanks_data)  # Assuming tank_102() takes no arguments
+    elif tank_code == 'TK-301':
+        tanknb = tank_301(tanks_data)  # Assuming tank_102() takes no arguments
+    elif tank_code == 'TK-302':
+        tanknb = tank_302(tanks_data)  # Assuming tank_102() takes no arguments
+    elif tank_code == 'TK-305':
+        tanknb = tank_305(tanks_data)  # Assuming tank_102() takes no arguments
+    elif tank_code == 'TK-303':
+        tanknb = tank_303(tanks_data)  # Assuming tank_102() takes no arguments
     # Add more conditions for other tanks if needed
+
+    # Get the SHELL_CAPACITY of the selected tank
+    tank_shell_capacity = tanks_inf.loc[tanks_inf['TANK_CODE'] == tank_code, 'SHELL_CAPACITY'].values[0]
+    terminal_product_number = tanks_inf.loc[tanks_inf['TANK_CODE'] == tank_code, 'NAME'].values[0]
+    # Filter tanks_inf DataFrame to include only rows for the selected tank_code
+    selected_tank_inf = tanks_data[tanks_data['TANK_CODE'] == tank_code]
+        
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf = selected_tank_inf.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date = sorted_tank_inf.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row = sorted_tank_inf.iloc[0]
+    last_date = last_date_row['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical = last_date_row['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
     
-    return render_template('tanktest.html', tanks_inf=tanks_inf, tanknb=tanknb)
+    weather_df = scrape_weather_data()
+      # Filter weather_df to include only rows where bestcondition is 1
+    weather_df_filtered = weather_df[weather_df['bestcondition'] == 1]
+    print(weather_df)
+     # Get the days from the filtered DataFrame
+    days_with_best_condition = list(weather_df_filtered['date'])
+    def decompose_date(date_str):
+        # Split the date string into day and month parts
+        day = int(date_str[3:5])
+        month_name = date_str[5:].strip()  # Remove any leading or trailing spaces
+        # Map the month name to its corresponding number (1 for January, 2 for February, etc.)
+        month_number = datetime.strptime(month_name, "%b").month
+        return day, month_number
+    # Decompose each date and pass the decomposed values to the template
+    decomposed_days_with_best_condition = [decompose_date(date) for date in days_with_best_condition]
+    print(decomposed_days_with_best_condition)
+
+    # Pass the decomposed dates to the template
+    return render_template('tanktest.html', tanks_inf=tanks_inf, tanknb=tanknb, shell_capacity=tank_shell_capacity,
+                        product_name=terminal_product_number, tank_name=tank_name, last_date=last_date,
+                        last_closing_physical=last_closing_physical, decomposed_days_with_best_condition=decomposed_days_with_best_condition,
+                        tank_names=tank_names)
+    
+    #print(days_with_best_condition)
+
+    #return render_template('tanktest.html', tanks_inf=tanks_inf, tanknb=tanknb, shell_capacity=tank_shell_capacity,product_name=terminal_product_number,tank_name=tank_name,last_date=last_date,last_closing_physical=last_closing_physical,days_with_best_condition=days_with_best_condition,tank_names=tank_names)
+
 
 
 

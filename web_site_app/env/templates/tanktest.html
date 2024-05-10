@@ -29,7 +29,10 @@
 
    
 
-    <!-- ***************************************-->
+    <!-- ************************<script src="../static/js/test.js" defer></script>***************-->
+    <link rel="stylesheet" href="../static/css/calendar.css">
+    
+    
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
   <!-- Nucleo Icons -->
@@ -45,31 +48,65 @@
 
 <!---->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
+<script type="text/javascript">
+  google.charts.load('current', {'packages':['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
 
-      function drawChart() {
+  function drawChart() {
+    var tankName = "{{ tank_name }}"; // Get the tank name from Flask route
+
+    var data = google.visualization.arrayToDataTable([
+      ['Date', 'Forecast'],
+      {% for index, row in tanknb.iterrows() %}
+      ['{{ row['Date'].strftime('%Y-%m-%d') }}', {{ row['Forecast'] }}],
+      {% endfor %}
+    ]);
+
+    var options = {
+      title: 'Future Predictions for ' + tankName, // Set dynamic title
+      hAxis: {title: 'Date',  titleTextStyle: {color: '#01ADAF'}},
+      vAxis: {title: 'Forecast', minValue: 0},
+      colors: ['#01ADAF'], // Set color for the chart
+      legend: {position: 'none'}, // Hide legend if needed
+    };
+
+    var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+    chart.draw(data, options);
+  }
+  
+</script>
+
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+   <script type="text/javascript">
+      google.charts.load('current', {'packages':['gauge']});
+      google.charts.setOnLoadCallback(drawGauge);
+
+      function drawGauge() {
+        var maxShellCapacity = {{ shell_capacity }};
+        var currentClosingPhysical = {{ last_closing_physical }};
+
         var data = google.visualization.arrayToDataTable([
-          ['Date', 'Forecast'],
-          {% for index, row in tanknb.iterrows() %}
-          ['{{ row['Date'].strftime('%Y-%m-%d') }}', {{ row['Forecast'] }}],
-          {% endfor %}
+          ['Label', 'Value'],
+          ['Closing Physical', currentClosingPhysical]
         ]);
 
         var options = {
-          title: 'Future Predictions for Tank 101',
-            hAxis: {title: 'Date',  titleTextStyle: {color: '#01ADAF'}},
-            vAxis: {title: 'Forecast', minValue: 0},
-            colors: ['#01ADAF'], // Set color for the chart
-            legend: {position: 'none'}, // Hide legend if needed
-            
+          width: 800, height: 300,
+          yellowFrom: maxShellCapacity * 0.95, yellowTo: maxShellCapacity,
+          greenFrom: maxShellCapacity * 0.85, greenTo: maxShellCapacity * 0.95,
+          redFrom: 0, redTo: maxShellCapacity * 0.1,
+          minorTicks: 5,
+          max: maxShellCapacity
         };
 
-        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+        var chart = new google.visualization.Gauge(document.getElementById('gauge_div'));
+
         chart.draw(data, options);
       }
     </script>
+    <!-- Embed JavaScript directly -->
+
 
 </head>
 
@@ -332,35 +369,35 @@
             <div class="container-fluid pt-4 px-4">
                 <div class="row g-4">
                     <div class="col-sm-6 col-xl-3">
+                      <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                        <i class="fa fa-bars fa-3x text-primary"></i>
+                        <div class="ms-3">
+                            <p class="mb-2">Total Shell Capacity</p>
+                            <h6 class="mb-0">{{ shell_capacity }}</h6>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
                         <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
-                            <i class="fa fa-chart-line fa-3x text-primary"></i>
+                            <i class="bi bi-water fa-3x text-primary"></i>
                             <div class="ms-3">
-                                <p class="mb-2">Total Number of Tanks</p>
-                                <h6 class="mb-0">24</h6>
+                                <p class="mb-2">Product Name</p>
+                                <h6 class="mb-0">{{ product_name }}</h6>
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6 col-xl-3">
                         <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
-                            <i class="fa fa-chart-bar fa-3x text-primary"></i>
+                            <i class="bi bi-water fa-3x text-primary"></i>
                             <div class="ms-3">
-                                <p class="mb-2">Total Number of Products</p>
-                                <h6 class="mb-0">18</h6>
+                                <p class="mb-2">Tank Name</p>
+                                <h6 class="mb-0">{{ tank_name}}</h6>
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6 col-xl-3">
                         <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
-                            <i class="fa fa-chart-area fa-3x text-primary"></i>
-                            <div class="ms-3">
-                                <p class="mb-2">Today Revenue</p>
-                                <h6 class="mb-0">$1234</h6>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-xl-3">
-                        <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
-                            <i class="fa fa-chart-pie fa-3x text-primary"></i>
+                            <i class="bi bi-water fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Total Revenue</p>
                                 <h6 class="mb-0">$1234</h6>
@@ -370,25 +407,55 @@
                 </div>
             </div>
             <!-- Sale & Revenue End -->
-
+            
 
             <!-- Sales Chart Start -->
             <div class="container-fluid pt-4 px-4">
-                <div class="row g-4">
-                    
-                    <div class="col-sm-12 col-xl-15">
-                        <div class="bg-secondary text-center rounded p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0">Prediciton Plot</h6>
-                                
-                            </div>
-                            <div id="chart_div" style="width: 100%; height: 500px;"></div>
-                        </div>
-                    </div>
+              <div class="row g-4">
+                  <div class="col-sm-12 col-xl-3">
+                      <div class="bg-secondary rounded h-100 p-4">
+                          <h6 class="mb-4">Predicted Values</h6>
+                          <table class="table">
+                            <thead>
+                              <tr>
+                                  <th>Date</th>
+                                  <th>Forecast</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              {% for index, row in tanknb.iterrows() %}
+                              <tr>
+                                  <td>{{ row['Date'].strftime('%Y-%m-%d') }}</td>
+                                  <td>{{ row['Forecast'] }}</td>
+                              </tr>
+                              {% endfor %}
+                          </tbody>
+                          </table>
+                      </div>
+                  </div>
+                  
+                  <div class="col-sm-12 col-xl-9">
+                      <div class="bg-secondary text-center rounded p-4">
+                          <div class="d-flex align-items-center justify-content-between mb-4">
+                              <h6 class="mb-0">Prediction Plot</h6>
+                          </div>
+                          <div id="chart_div" style="width: 100%; height: 500px;"></div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="col-sm-10 col-xl-3"style="margin-top: 20px; padding-left: 20px;">
+            <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                <div class="ms-3">
+                  <h6 class="mb-0">Gauge</h6>
+                  <div id="gauge_div" style="width: 800px; height: 320px; padding-left: 10px; margin-top: 20px;"></div>
                 </div>
             </div>
-            <!-- Sales Chart End -->
+          </div>
+          
 
+            <!-- Sales Chart End -->
+          
 
             <!-- Recent Sales Start -->
             <div class="container-fluid pt-4 px-4">
@@ -397,6 +464,8 @@
                         <h6 class="mb-0">Recent Salse</h6>
                         <a href="">Show All</a>
                     </div>
+                    
+
                     <div class="table-responsive">
                         <table class="table text-start align-middle table-bordered table-hover mb-0">
                             <thead>
@@ -410,15 +479,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for index, row in tanks_inf.iterrows() %}
-                                <tr>
-                                    <td>{{ row['TANK_CODE'] }}</td>
-                                    <td>{{ row['NAME'] }}</td>
-                                    <td>{{ row['SHELL_CAPACITY'] }}</td>
-                                    <td>{{ row['TERMINAL_PRODUCT_NUMBER'] }}</td>
-                                    <td><a class="btn btn-sm btn-primary" href="{{ url_for('tank', tank_code=row['TANK_CODE']) }}">Detail</a></td>
-                                </tr>
-                                {% endfor %}
+                              {% for index, row in tanks_inf.iterrows() %}
+                              {% if row['TANK_CODE'] not in ['TK-100', 'TK-200', 'TK-300', 'TK-400','TK-500', 'TK-600'] %}
+                                  <tr>
+                                      <td>{{ row['TANK_CODE'] }}</td>
+                                      <td>{{ row['NAME'] }}</td>
+                                      <td>{{ row['SHELL_CAPACITY'] }}</td>
+                                      <td>{{ row['TERMINAL_PRODUCT_NUMBER'] }}</td>
+                                      <td><a class="btn btn-sm btn-primary" href="{{ url_for('tank', tank_code=row['TANK_CODE']) }}">Detail</a></td>
+                                  </tr>
+                              {% endif %}
+                          {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -430,120 +501,142 @@
             <!-- Widgets Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="row g-4">
-                    <div class="col-sm-12 col-md-6 col-xl-4">
-                        <div class="h-100 bg-secondary rounded p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <h6 class="mb-0">Messages</h6>
-                                <a href="">Show All</a>
+                  <div class="col-sm-12 col-xl-7">
+                    <div class="bg-secondary rounded h-100 p-4">
+                        <h6 class="mb-4">Add to a Tank</h6>
+                        <form action="/submit_form" method="post">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" id="floatingSelect" name="tank_code" aria-label="Floating label select example">
+                                    {% for code, name in tank_names.items() %}
+                                    <option value="{{ code }}">{{ name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="floatingSelect">Choose a tank</label>
                             </div>
-                            <div class="d-flex align-items-center border-bottom py-3">
-                                <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                                <div class="w-100 ms-3">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-0">Jhon Doe</h6>
-                                        <small>15 minutes ago</small>
-                                    </div>
-                                    <span>Short message goes here...</span>
-                                </div>
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control" id="datePicker" name="selected_date">
+                                <label for="datePicker">Select a date</label>
                             </div>
-                            <div class="d-flex align-items-center border-bottom py-3">
-                                <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                                <div class="w-100 ms-3">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-0">Jhon Doe</h6>
-                                        <small>15 minutes ago</small>
-                                    </div>
-                                    <span>Short message goes here...</span>
-                                </div>
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="closingPhysical" name="closing_physical" placeholder="Closing Physical">
+                                <label for="closingPhysical">Closing Physical</label>
                             </div>
-                            <div class="d-flex align-items-center border-bottom py-3">
-                                <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                                <div class="w-100 ms-3">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-0">Jhon Doe</h6>
-                                        <small>15 minutes ago</small>
-                                    </div>
-                                    <span>Short message goes here...</span>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center pt-3">
-                                <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                                <div class="w-100 ms-3">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-0">Jhon Doe</h6>
-                                        <small>15 minutes ago</small>
-                                    </div>
-                                    <span>Short message goes here...</span>
-                                </div>
-                            </div>
-                        </div>
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </form>
                     </div>
-                    <div class="col-sm-12 col-md-6 col-xl-4">
-                        <div class="h-100 bg-secondary rounded p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0">Calender</h6>
-                                <a href="">Show All</a>
-                            </div>
-                            <div id="calender"></div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-6 col-xl-4">
-                        <div class="h-100 bg-secondary rounded p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0">To Do List</h6>
-                                <a href="">Show All</a>
-                            </div>
-                            <div class="d-flex mb-2">
-                                <input class="form-control bg-dark border-0" type="text" placeholder="Enter task">
-                                <button type="button" class="btn btn-primary ms-2">Add</button>
-                            </div>
-                            <div class="d-flex align-items-center border-bottom py-2">
-                                <input class="form-check-input m-0" type="checkbox">
-                                <div class="w-100 ms-3">
-                                    <div class="d-flex w-100 align-items-center justify-content-between">
-                                        <span>Short task goes here...</span>
-                                        <button class="btn btn-sm"><i class="fa fa-times"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center border-bottom py-2">
-                                <input class="form-check-input m-0" type="checkbox">
-                                <div class="w-100 ms-3">
-                                    <div class="d-flex w-100 align-items-center justify-content-between">
-                                        <span>Short task goes here...</span>
-                                        <button class="btn btn-sm"><i class="fa fa-times"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center border-bottom py-2">
-                                <input class="form-check-input m-0" type="checkbox" checked>
-                                <div class="w-100 ms-3">
-                                    <div class="d-flex w-100 align-items-center justify-content-between">
-                                        <span><del>Short task goes here...</del></span>
-                                        <button class="btn btn-sm text-primary"><i class="fa fa-times"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center border-bottom py-2">
-                                <input class="form-check-input m-0" type="checkbox">
-                                <div class="w-100 ms-3">
-                                    <div class="d-flex w-100 align-items-center justify-content-between">
-                                        <span>Short task goes here...</span>
-                                        <button class="btn btn-sm"><i class="fa fa-times"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center pt-2">
-                                <input class="form-check-input m-0" type="checkbox">
-                                <div class="w-100 ms-3">
-                                    <div class="d-flex w-100 align-items-center justify-content-between">
-                                        <span>Short task goes here...</span>
-                                        <button class="btn btn-sm"><i class="fa fa-times"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                </div>
+                
+                <div class="col-sm-12 col-md-6 col-xl-5">
+                  <div class="h-100 bg-secondary rounded p-4">
+                    <div class="container">
+                      <div class="container">
+                        <div class="calendar">
+                            <header>
+                                <h2>September</h2>
+                                <a class="btn-prev fontawesome-angle-left" href="#"></a>
+                                <a class="btn-next fontawesome-angle-right" href="#"></a>
+                            </header>
+                            <table>
+                                <thead>
+                                    <tr>
+                                       <td>Su</td>
+                                        <td>Mo</td>
+                                        <td>Tu</td>
+                                        <td>We</td>
+                                        <td>Th</td>
+                                        <td>Fr</td>
+                                        <td>Sa</td>
+                                    </tr>
+                                </thead>
+                                <tbody id="calendar-body">
+                                    <!-- Calendar days dynamically generated here -->
+                                
+                                </tbody>
+                            </table>
+                        </div> <!-- end calendar -->
+                    </div> <!-- end container -->
+                    
+                    <script>
+                      document.addEventListener('DOMContentLoaded', function() {
+                          // Get the current date
+                          var currentDate = new Date();
+                          var currentDay = currentDate.getDate();
+                          var currentMonth = currentDate.getMonth();
+                          var currentYear = currentDate.getFullYear();
+                          console.log(currentDate.getMonth());
+                      
+                          // Update the header with the current month
+                          document.querySelector('h2').textContent = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(currentDate) + " " + currentYear;
+                      
+                          // Function to get the number of days in a month
+                          function daysInMonth(month, year) {
+                              return new Date(year, month + 1, 0).getDate();
+                          }
+                      
+                          // Function to generate calendar days
+                          function generateCalendar() {
+                              var calendarBody = document.getElementById('calendar-body');
+                              var daysInPrevMonth = daysInMonth(currentMonth - 1, currentYear);
+                              var daysInCurrentMonth = daysInMonth(currentMonth, currentYear);
+                      
+                              var firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+                      
+                              // Clear previous calendar days
+                              calendarBody.innerHTML = '';
+                      
+                              // Add previous month's days
+                              for (var i = daysInPrevMonth - firstDayOfMonth + 1; i <= daysInPrevMonth; i++) {
+                                  var dayCell = document.createElement('td');
+                                  dayCell.classList.add('prev-month');
+                                  dayCell.textContent = i;
+                                  calendarBody.appendChild(dayCell);
+                              }
+                      
+                              // Add current month's days
+                              for (var i = 1; i <= daysInCurrentMonth; i++) {
+                                  var dayCell = document.createElement('td');
+                                  dayCell.textContent = i;
+                      
+                                  // Highlight today's date
+                                  if (i === currentDay && currentMonth === currentDate.getMonth() && currentYear === currentDate.getFullYear()) {
+                                      dayCell.classList.add('current-day');
+                                  }
+                                                                  // Highlight specific date ('Sun19 May')
+                                    //if (currentYear === 2024 && currentMonth === 4 && i === 19) {
+                                        //dayCell.classList.add('event');
+                                    //}
+
+                                                                      // Highlight specific dates returned by the server
+                                    {% for date_tuple in decomposed_days_with_best_condition %}
+                                        var day = {{ date_tuple[0] }};
+                                        var month = {{ date_tuple[1] }};
+                                        
+                                        if (currentYear === 2024 && currentMonth === month-1 && i == day) {
+                                            dayCell.classList.add('event');
+                                            console.log(day,month);
+                                        }
+                                    {% endfor %}
+
+                                  calendarBody.appendChild(dayCell);
+                              }
+                      
+                              // Add next month's days
+                              var remainingCells = 7 - (calendarBody.children.length % 7);
+                              for (var i = 1; i <= remainingCells; i++) {
+                                  var dayCell = document.createElement('td');
+                                  dayCell.classList.add('next-month');
+                                  dayCell.textContent = i;
+                                  calendarBody.appendChild(dayCell);
+                              }
+                          }
+                      
+                          generateCalendar();
+                      });
+                      </script>
+                    
+                  </div>
+              </div>
+                    
                 </div>
             </div>
             <!-- Widgets End -->

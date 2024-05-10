@@ -368,15 +368,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for index, row in tanks_inf.iterrows() %}
-                                <tr>
-                                    <td>{{ row['TANK_CODE'] }}</td>
-                                    <td>{{ row['NAME'] }}</td>
-                                    <td>{{ row['SHELL_CAPACITY'] }}</td>
-                                    <td>{{ row['TERMINAL_PRODUCT_NUMBER'] }}</td>
-                                    <td><a class="btn btn-sm btn-primary" href="{{ url_for('tank', tank_code=row['TANK_CODE']) }}">Detail</a></td>
-                                </tr>
-                                {% endfor %}
+                              {% for index, row in tanks_inf.iterrows() %}
+                              {% if row['TANK_CODE'] not in ['TK-100', 'TK-200', 'TK-300', 'TK-400', 'TK-500', 'TK-600'] %}
+                                  <tr>
+                                      <td>{{ row['TANK_CODE'] }}</td>
+                                      <td>{{ row['NAME'] }}</td>
+                                      <td>{{ row['SHELL_CAPACITY'] }}</td>
+                                      <td>{{ row['TERMINAL_PRODUCT_NUMBER'] }}</td>
+                                      <td><a class="btn btn-sm btn-primary" href="{{ url_for('tank', tank_code=row['TANK_CODE']) }}">Detail</a></td>
+                                  </tr>
+                              {% endif %}
+                          {% endfor %}
                             </tbody>
                         </table>
                     </div>

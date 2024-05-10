@@ -19,7 +19,12 @@ from pmdarima.arima import auto_arima
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
-
+import requests
+from bs4 import BeautifulSoup
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 
 
 def tank_101(gainloss):
@@ -869,3 +874,186 @@ def tank_302(gainloss):
     print(future_predictions_df)
     return future_predictions_df
 
+def tank_303(gainloss):
+        # Filter the DataFrame for entries with tank code 'TK-303'
+    tank_303_data = gainloss[gainloss['TANK_CODE'] == 'TK-303']
+
+    # Convert 'FOLIO_NUMBER' to datetime if it's not already in datetime format
+    tank_303_data['FOLIO_NUMBER'] = pd.to_datetime(tank_303_data['FOLIO_NUMBER'])
+
+    # Set 'FOLIO_NUMBER' as the index
+    tank_303_data.set_index('FOLIO_NUMBER', inplace=True)
+
+    # Resample the data to monthly frequency and take the last value of each month
+    tank_303_data_monthly = tank_303_data.resample('2W')['CLOSING_PHYSICAL'].sum()
+        # Extract the last date (index)
+    last_date_index = tank_303_data_monthly.index[-1]
+
+    # Convert the last date to a datetime object
+    last_date_dt = pd.to_datetime(last_date_index)
+
+    # Generate 8 dates with a 2-week step starting from the day after the last date
+    next_dates = pd.date_range(start=last_date_dt + pd.DateOffset(days=14), periods=8, freq='2W')
+
+    # Convert the next_dates to a datetime index
+    next_dates = pd.to_datetime(next_dates)
+
+    # Create a Series with future dates as the index
+    future_series = pd.Series(index=next_dates)
+
+    # Initialize an empty dataframe to store predictions
+    future_predictions = pd.DataFrame(index=future_series.index, columns=['Forecast'])
+
+    # Initial training data
+    train_data = tank_303_data_monthly
+
+    # Fitting the model and making predictions for each future date
+    for end_date in future_series.index:
+        try:
+            model = SARIMAX(train_data,  order=(1, 0,1), seasonal_order=(1,0,0,26))  # SARIMA with seasonal component
+            model_fit = model.fit()
+            pred = model_fit.forecast(steps=1)  # Forecast one step ahead
+            future_predictions.loc[end_date] = pred[0]  # Assign forecasted value to correct index
+            train_data = train_data._append(pd.Series(pred[0], index=[end_date]))
+        except Exception as e:
+            print("Error occurred for date:", end_date)
+            print("Error details:", str(e))
+
+            # Create a DataFrame with Date index and Forecast values
+    future_predictions_df = pd.DataFrame(index=next_dates, columns=['Date', 'Forecast'])
+
+                # Fill the 'Date' column with the index values
+    future_predictions_df['Date'] = next_dates
+
+                # Fill the 'Forecast' column with the values from future_predictions
+    future_predictions_df['Forecast'] = future_predictions['Forecast'].values
+
+                # Reset the index to remove the default index and ensure 'Date' becomes a regular column
+    future_predictions_df.reset_index(drop=True, inplace=True)
+    print(future_predictions_df)
+
+    return future_predictions_df
+
+def tank_305(gainloss):
+        # Filter the DataFrame for entries with tank code 'TK-305'
+    tank_305_data = gainloss[gainloss['TANK_CODE'] == 'TK-305']
+
+    # Convert 'FOLIO_NUMBER' to datetime if it's not already in datetime format
+    tank_305_data['FOLIO_NUMBER'] = pd.to_datetime(tank_305_data['FOLIO_NUMBER'])
+
+    # Set 'FOLIO_NUMBER' as the index
+    tank_305_data.set_index('FOLIO_NUMBER', inplace=True)
+
+    # Resample the data to monthly frequency and take the last value of each month
+    tank_305_data_monthly = tank_305_data.resample('2W')['CLOSING_PHYSICAL'].sum()
+        # Extract the last date (index)
+    last_date_index = tank_305_data_monthly.index[-1]
+
+    # Convert the last date to a datetime object
+    last_date_dt = pd.to_datetime(last_date_index)
+
+    # Generate 8 dates with a 2-week step starting from the day after the last date
+    next_dates = pd.date_range(start=last_date_dt + pd.DateOffset(days=14), periods=8, freq='2W')
+
+    # Convert the next_dates to a datetime index
+    next_dates = pd.to_datetime(next_dates)
+
+    # Create a Series with future dates as the index
+    future_series = pd.Series(index=next_dates)
+
+    # Initialize an empty dataframe to store predictions
+    future_predictions = pd.DataFrame(index=future_series.index, columns=['Forecast'])
+
+    # Initial training data
+    train_data = tank_305_data_monthly
+
+    # Fitting the model and making predictions for each future date
+    for end_date in future_series.index:
+        try:
+            model = SARIMAX(train_data, order=(1, 1,1), seasonal_order=(1,0,0,26))  # SARIMA with seasonal component
+            model_fit = model.fit()
+            pred = model_fit.forecast(steps=1)  # Forecast one step ahead
+            future_predictions.loc[end_date] = pred[0]  # Assign forecasted value to correct index
+            train_data = train_data._append(pd.Series(pred[0], index=[end_date]))
+        except Exception as e:
+            print("Error occurred for date:", end_date)
+            print("Error details:", str(e))
+
+            # Create a DataFrame with Date index and Forecast values
+    future_predictions_df = pd.DataFrame(index=next_dates, columns=['Date', 'Forecast'])
+
+                # Fill the 'Date' column with the index values
+    future_predictions_df['Date'] = next_dates
+
+                # Fill the 'Forecast' column with the values from future_predictions
+    future_predictions_df['Forecast'] = future_predictions['Forecast'].values
+
+                # Reset the index to remove the default index and ensure 'Date' becomes a regular column
+    future_predictions_df.reset_index(drop=True, inplace=True)
+    print(future_predictions_df)
+    return future_predictions_df
+
+
+def scrape_weather_data():
+    
+# Filter out the specific Matplotlib warning
+    warnings.filterwarnings("ignore", message="Exception ignored in:.*")
+        # Scrape weather data from the website
+    url = "https://www.timeanddate.com/weather/morocco/el-jadida/ext"
+    r = requests.get(url)
+    soup = BeautifulSoup(r.content, "html.parser")
+    table = soup.find("table", class_="zebra")
+
+    # Extracting table rows
+    rows = table.find_all("tr")
+
+    data = []
+
+    # Extracting data from each row
+    for row in rows[1:]:  # skipping the header row
+        cells = row.find_all("td")
+
+        # Check if there are enough cells in the row
+        if len(cells) >= 11:  # assuming you need at least 11 cells
+            # Extracting data from each cell
+            day = row.find("span").get_text(strip=True)
+            date = row.find("th").get_text(strip=True)
+            temperature = cells[1].get_text(strip=True)
+            weather = cells[3].get_text(strip=True)
+            humidity = cells[7].get_text(strip=True)
+            wind = cells[4].get_text(strip=True)
+
+            # Appending extracted data to the list
+            data.append({
+                "day": day,
+                "date": date,
+                "Weather": weather,
+                "Wind": wind,
+            })
+
+    # Creating DataFrame from the list of dictionaries
+    df = pd.DataFrame(data)
+
+    # Clean and convert columns
+    df['Weather'] = df['Weather'].astype(str)
+    df['Weather'] = pd.to_numeric(df['Weather'].str.extract(r'(\d+)')[0])
+
+    df['Wind'] = df['Wind'].astype(str)
+    df['Wind'] = pd.to_numeric(df['Wind'].str.extract(r'(\d+)')[0])
+
+
+    # Create 'bestcondition' based on certain conditions of 'Weather' and 'Wind':
+    df['bestcondition'] = ((df['Weather'] < 23) & (df['Wind'] < 20)).astype(int)
+
+    # Apply PCA and KMeans clustering to help in determining the clusters
+    scaler = StandardScaler()
+    df_scaled = scaler.fit_transform(df[['Weather', 'Wind', 'bestcondition']])
+
+    pca = PCA(n_components=2)
+    df_pca = pca.fit_transform(df_scaled)
+
+    kmeans = KMeans(n_clusters=2)
+    kmeans.fit(df_pca)
+    df['Cluster'] = kmeans.labels_
+
+    return df
