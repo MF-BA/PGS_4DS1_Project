@@ -1,0 +1,249 @@
+:root {
+    --primary: #EB1616 !important;
+    --secondary: #f8f9fa !important;
+    --light: #344767 !important;
+    --dark: #f8f9fa !important;
+}
+
+.back-to-top {
+    position: fixed !important;
+    display: none !important;
+    right: 45px !important;
+    bottom: 45px !important;
+    z-index: 99 !important;
+}
+
+#spinner {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity .5s ease-out, visibility 0s linear .5s !important;
+    z-index: 99999 !important;
+}
+
+#spinner.show {
+    transition: opacity .5s ease-out, visibility 0s linear 0s !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.btn {
+    transition: .5s !important;
+}
+
+.btn-square,
+.btn-sm-square,
+.btn-lg-square {
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: normal !important;
+    border-radius: 50px !important;
+}
+
+
+.content {
+    margin-left: 250px !important;
+    min-height: 100vh !important;
+    background: var(--dark) !important;
+    transition: 0.5s !important;
+}
+
+@media (min-width: 992px) {
+    .sidebar {
+        margin-left: 0 !important;
+    }
+
+    .sidebar.open {
+        margin-left: -250px !important;
+    }
+
+    .content {
+        width: calc(100% - 250px) !important;
+    }
+
+    .content.open {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .sidebar {
+        margin-left: -250px !important;
+    }
+
+    .sidebar.open {
+        margin-left: 0 !important;
+    }
+
+    .content {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+}
+
+.sidebar .navbar .navbar-nav .nav-link {
+    padding: 7px 20px !important;
+    color: var(--light) !important;
+    font-weight: 500 !important;
+    border-left: 3px solid var(--secondary) !important;
+    border-radius: 0 30px 30px 0 !important;
+    outline: none !important;
+}
+
+.sidebar .navbar .navbar-nav .nav-link:hover,
+.sidebar .navbar .navbar-nav .nav-link.active {
+    color: var(--primary) !important;
+    background: var(--dark) !important;
+    border-color: var(--primary) !important;
+}
+
+.sidebar .navbar .navbar-nav .nav-link i {
+    width: 40px !important;
+    height: 40px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: var(--dark) !important;
+    border-radius: 40px !important;
+}
+
+.sidebar .navbar .navbar-nav .nav-link:hover i,
+.sidebar .navbar .navbar-nav .nav-link.active i {
+    background: var(--secondary) !important;
+}
+
+.sidebar .navbar .dropdown-toggle::after {
+    position: absolute !important;
+    top: 15px !important;
+    right: 15px !important;
+    border: none !important;
+    content: "\f107" !important;
+    font-family: "Font Awesome 5 Free" !important;
+    font-weight: 900 !important;
+    transition: .5s !important;
+}
+
+.sidebar .navbar .dropdown-toggle[aria-expanded=true]::after {
+    transform: rotate(-180deg) !important;
+}
+
+.sidebar .navbar .dropdown-item {
+    padding-left: 25px !important;
+    border-radius: 0 30px 30px 0 !important;
+    color: var(--light) !important;
+}
+
+.sidebar .navbar .dropdown-item:hover,
+.sidebar .navbar .dropdown-item.active {
+    background: var(--dark) !important;
+}
+
+.content .navbar .navbar-nav .nav-link {
+    margin-left: 25px !important;
+    padding: 12px 0 !important;
+    color: var(--light) !important;
+    outline: none !important;
+}
+
+.content .navbar .navbar-nav .nav-link:hover,
+.content .navbar .navbar-nav .nav-link.active {
+    color: var(--primary) !important;
+}
+
+.content .navbar .navbar-nav .nav-link i,
+.content .navbar .sidebar-toggler {
+    width: 40px !important;
+    height: 40px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: var(--dark) !important;
+    border-radius: 40px !important;
+}
+.content .navbar .dropdown-item {
+    color: var(--light) !important;
+}
+
+.content .navbar .dropdown-item:hover,
+.content .navbar .dropdown-item.active {
+    background: var(--dark) !important;
+}
+
+.content .navbar .dropdown-toggle::after {
+    margin-left: 6px !important;
+    vertical-align: middle !important;
+    border: none !important;
+    content: "\f107" !important;
+    font-family: "Font Awesome 5 Free" !important;
+    font-weight: 900 !important;
+    transition: .5s !important;
+}
+
+.content .navbar .dropdown-toggle[aria-expanded=true]::after {
+    transform: rotate(-180deg) !important;
+}
+
+@media (max-width: 575.98px) {
+    .content .navbar .navbar-nav .nav-link {
+        margin-left: 15px !important;
+    }
+}
+
+.bootstrap-datetimepicker-widget.bottom {
+    top: auto !important;
+}
+
+.bootstrap-datetimepicker-widget .table * {
+    border-bottom-width: 0px !important;
+}
+.text-white {
+    color: #8392AB !important;
+  }
+
+.bootstrap-datetimepicker-widget .table th {
+    font-weight: 500 !important;
+}
+
+.bootstrap-datetimepicker-widget.dropdown-menu {
+    padding: 10px !important;
+    border-radius: 2px !important;
+}
+
+.bootstrap-datetimepicker-widget table td.active,
+.bootstrap-datetimepicker-widget table td.active:hover {
+    background: var(--primary) !important;
+}
+
+.bootstrap-datetimepicker-widget table td.today::before {
+    border-bottom-color: var(--primary) !important;
+}
+
+.progress .progress-bar {
+    width: 0px !important;
+    transition: 2s !important;
+}
+
+.testimonial-carousel .owl-dots {
+    margin-top: 24px !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+}
+
+.testimonial-carousel .owl-dot {
+    position: relative !important;
+    display: inline-block !important;
+    margin: 0 5px !important;
+    width: 15px !important;
+    height: 15px !important;
+    border: 5px solid var(--primary) !important;
+    border-radius: 15px !important;
+    transition: .5s !important;
+}
+
+.testimonial-carousel .owl-dot.active {
+    background: var(--dark) !important;
+    border-color: var(--primary) !important;
+}

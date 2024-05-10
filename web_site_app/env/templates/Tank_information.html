@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tank Information</title>
+</head>
+<body>
+    <h1>Tank Information</h1>
+    <table>
+        <tr>
+            <th>Tank Code</th>
+            <th>Name</th>
+            <th>Shell Capacity</th>
+            <th>Terminal Product Number</th>
+        </tr>
+        {% for index, row in tanks_inf.iterrows() %}
+        <tr>
+            <td>{{ row['TANK_CODE'] }}</td>
+            <td>{{ row['NAME'] }}</td>
+            <td>{{ row['SHELL_CAPACITY'] }}</td>
+            <td>{{ row['TERMINAL_PRODUCT_NUMBER'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

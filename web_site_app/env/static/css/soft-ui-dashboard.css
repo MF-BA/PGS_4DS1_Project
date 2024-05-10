@@ -51,7 +51,7 @@ body {
   font-weight: 400;
   line-height: 1.5;
   color: #67748e;
-  background-color: #fff;
+  background-color: #f8f9fa;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
@@ -9826,7 +9826,7 @@ fieldset:disabled .btn {
 
 /* rtl:end:remove */
 .text-primary {
-  color: #cb0c9f !important;
+  color: #cb0c9f ;
 }
 
 .text-secondary {
@@ -9862,7 +9862,7 @@ fieldset:disabled .btn {
 }
 
 .text-white {
-  color: #fff !important;
+  color: #fff ;
 }
 
 .text-body {
@@ -9890,7 +9890,7 @@ fieldset:disabled .btn {
 }
 
 .bg-secondary {
-  background-color: #8392AB !important;
+  background-color: #8392AB ;
 }
 
 .bg-success {
