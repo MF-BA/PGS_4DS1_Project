@@ -19,6 +19,47 @@
   <link href="{{ url_for('static',filename='css/nucleo-svg.css')}}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ url_for('static',filename='css/soft-ui-dashboard.css')}}?v=1.0.3" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" />
+  <style>
+    /* Search bar */
+.dataTables_filter {
+    margin-bottom: 10px;
+}
+
+.dataTables_filter input[type="search"] {
+    width: 200px; /* Adjust width as needed */
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}
+
+/* Pagination */
+.dataTables_paginate {
+    margin-top: 10px;
+}
+
+.dataTables_paginate .paginate_button {
+    padding: 4px 10px;
+    margin-right: 4px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    transition: background-color ease-in-out 0.15s, border-color ease-in-out 0.15s, color ease-in-out 0.15s;
+}
+
+.dataTables_paginate .paginate_button:hover {
+    background-color: #f2f2f2;
+}
+
+  </style>
+  
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">
@@ -347,7 +388,7 @@
             <div class="card-body px-0 pt-0 pb-2">
               <div class="table-responsive p-0">
                 <div style="overflow-x: auto;">
-                <table class="table align-items-center mb-0">
+                  <table class="table align-items-center mb-0" id="table-meter">
                     <thead>
                         <tr>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Meter Code</th>
@@ -356,63 +397,83 @@
                             <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Day in use</th>
                             <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                             <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Use Meter</th>
-                            
                         </tr>
                     </thead>
                     <tbody>
-                      {% for cluster_label, meter_codes in meter_groups.items() %}
-                          {% for meter_code in meter_codes %}
-                              <tr>
-                                  <td>
-                                      <div class="d-flex px-2 py-1">
-                                          <div>
-                                              <img src="{{ url_for('static', filename='img/meter.png') }}" class="avatar avatar-equip me-3" alt="user6">
-                                          </div>
-                                          <div class="d-flex flex-column justify-content-center">
-                                              <!-- Display the meter code -->
-                                              <h6 class="mb-0 text-sm">{{ meter_code }}</h6>
-                                          </div>
-                                      </div>
-                                  </td>
-                                  <td class="align-middle text-center">
-                                    <!-- Display the days_since_last_non_zero -->
-                                    {% set meter_data_days = meter_result[meter_result['METER_CODE'] == meter_code] %}
-                                    {% set days_since_last_non_zero = meter_data_days['last_date_non_zero'].values[0] %}
-                                    <p class="text-xs font-weight-bold mb-0">{{ days_since_last_non_zero }}  Days</p>
-                                 </td>
-                                  <td class="align-middle text-center">
-                                      <!-- Retrieve and display the first and last date in use -->
-                                      {% set meter_data_single = meter_data[meter_data['METER_CODE'] == meter_code] %}
-                                      {% set first_date_in_use = meter_data_single['FOLIO_NUMBER'].min() %}
-                                      {% set last_date_in_use = meter_data_single['FOLIO_NUMBER'].max() %}
-                                      
-                                      <p class="text-xs font-weight-bold mb-0">{{ first_date_in_use }}</p>
-                                  </td>
-                                  <td class="align-middle text-center">
-                                    <!-- Retrieve and display the first and last date in use -->
-                                    
-                                    <p class="text-xs font-weight-bold mb-0">{{ last_date_in_use }}</p>
-                                </td>
-                                  <td class="align-middle text-center text-sm">
-                                      <!-- Display the status based on cluster label -->
-                                      {% if cluster_label == 'Cluster 0' %}
-                                          <p class="badge-equip bg-gradient-success">Operational</p>
-                                      {% elif cluster_label == 'Cluster 1' %}
-                                          <p class="badge-equip bg-gradient-success">Operational</p>
-                                      {% elif cluster_label == 'Cluster 2' %}
-                                          <p class="badge-equip bg-gradient-yellow">Inspection</p>
-                                      {% elif cluster_label == 'Cluster 3' %}
-                                          <p class="badge-equip bg-gradient-danger">Disfunction</p>
-                                      {% endif %}
-                                  </td>
-                                  <td class="align-middle text-center">
-                                    <a class="btn btn-sm btn-round bg-gradient-primary mb-0" href="javascript:;"><i class="fa fa-hand-paper-o a-2x" aria-hidden="true"></i>&nbsp;&nbsp;Use</a>
-                                  </td>
-                              </tr>
-                          {% endfor %}
-                      {% endfor %}
-                  </tbody>                                  
+                        {% for cluster_label, meter_codes in meter_groups.items() %}
+                        {% for meter_code in meter_codes %}
+                        <tr>
+                            <td>
+                                <div class="d-flex px-2 py-1">
+                                    <div>
+                                        <img src="{{ url_for('static', filename='img/meter.png') }}" class="avatar avatar-equip me-3" alt="user6">
+                                    </div>
+                                    <div class="d-flex flex-column justify-content-center">
+                                        <!-- Display the meter code -->
+                                        <h6 class="mb-0 text-sm">{{ meter_code }}</h6>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-middle text-center">
+                                <!-- Display the days_since_last_non_zero -->
+                                {% set meter_data_days = meter_result[meter_result['METER_CODE'] == meter_code] %}
+                                {% set days_since_last_non_zero = meter_data_days['last_date_non_zero'].values[0] %}
+                                <p class="text-xs font-weight-bold mb-0">{{ days_since_last_non_zero }}  Days</p>
+                            </td>
+                            <td class="align-middle text-center">
+                                <!-- Retrieve and display the first and last date in use -->
+                                {% set meter_data_single = meter_data[meter_data['METER_CODE'] == meter_code] %}
+                                {% set first_date_in_use = meter_data_single['FOLIO_NUMBER'].min() %}
+                                {% set last_date_in_use = meter_data_single['FOLIO_NUMBER'].max() %}
+                
+                                <p class="text-xs font-weight-bold mb-0">{{ first_date_in_use }}</p>
+                            </td>
+                            <td class="align-middle text-center">
+                                <!-- Retrieve and display the first and last date in use -->
+                                <p class="text-xs font-weight-bold mb-0">{{ last_date_in_use }}</p>
+                            </td>
+                            <td class="align-middle text-center text-sm">
+                                <!-- Display the status based on cluster label -->
+                                {% if cluster_label == 'Cluster 0' %}
+                                <p class="badge-equip bg-gradient-success">Operational</p>
+                                {% elif cluster_label == 'Cluster 1' %}
+                                <p class="badge-equip bg-gradient-success">Operational</p>
+                                {% elif cluster_label == 'Cluster 2' %}
+                                <p class="badge-equip bg-gradient-yellow">Inspection</p>
+                                {% elif cluster_label == 'Cluster 3' %}
+                                <p class="badge-equip bg-gradient-danger">Disfunction</p>
+                                {% endif %}
+                            </td>
+                            <td class="align-middle text-center">
+                                <a class="btn btn-sm btn-round bg-gradient-primary mb-0" href="javascript:;"><i class="fa fa-hand-paper-o a-2x" aria-hidden="true"></i>&nbsp;&nbsp;Use</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                    </tbody>
                 </table>
+                
+                <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+                <script>
+                    $(document).ready(function () {
+                        $('#table-meter').DataTable({
+                            "paging": true, // Enable pagination
+                            "searching": true ,
+                             lengthMenu: [5],
+                             showPageSize: false
+                        });
+                    });
+                </script>
+                <style>
+                  /* Hide the "Show" dropdown */
+                  .dataTables_length {
+                      display: none;
+                  }
+                  .dataTables_info {
+                    display: none;
+                  }
+              </style>
+                
                 </div>
                 
                 
