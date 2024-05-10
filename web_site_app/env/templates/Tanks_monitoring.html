@@ -19,6 +19,49 @@
   <link href="{{ url_for('static',filename='css/nucleo-svg.css')}}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ url_for('static',filename='css/soft-ui-dashboard.css')}}?v=1.0.3" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+
+
+  <style>
+    /* Search bar */
+    .dataTables_filter {
+      margin-bottom: 10px;
+    }
+
+    .dataTables_filter input[type="search"] {
+      width: 200px;
+      /* Adjust width as needed */
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    }
+
+    /* Pagination */
+    .dataTables_paginate {
+      margin-top: 10px;
+    }
+
+    .dataTables_paginate .paginate_button {
+      padding: 4px 10px;
+      margin-right: 4px;
+      border-radius: 4px;
+      /*border: 1px solid #ccc;*/
+      background-color: #fff;
+      color: #ffffff;
+      cursor: pointer;
+      transition: background-color ease-in-out 0.15s, border-color ease-in-out 0.15s, color ease-in-out 0.15s;
+    }
+
+    .dataTables_paginate .paginate_button:hover {
+      background-color: #f2f2f2;
+    }
+  </style>
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">
@@ -227,7 +270,7 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{url_for('equipement_monitoring')}}">Home</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Equipement Monitoring</li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Tanks Monitoring</li>
           </ol>
           <h6 class="font-weight-bolder mb-0">Equipement</h6>
         </nav>
@@ -338,89 +381,281 @@
     </nav>
     <!-- End Navbar -->
     
-      <div class="row">
-        <div class="col-12">
-          <div class="card mb-4">
+    <div class="container-fluid py-4">
+      <div class="row mt-4">
+
+        <div class="col-lg-4">
+          <div class="card h-100">
+            <div class="card-header pb-0 p-3">
+              <div class="row">
+                <div class="col-6 d-flex align-items-center">
+                  <h5 class="mb-0">Tanks Stats</h5>
+                </div>
+              </div>
+            </div>
+            <div class="card-body p-3 d-flex flex-column">
+
+              <div class="chart-container">
+                <canvas id="pie-chart" style="height: 300%;"></canvas> <!-- Set height to 100% -->
+            </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-8">
+          <div class="card h-100">
             <div class="card-header pb-0">
               <h6>Tanks Monitoring</h6>
             </div>
+            <br>
             <div class="card-body px-0 pt-0 pb-2">
               <div class="table-responsive p-0">
-                <table class="table align-items-center justify-content-center mb-0">
-                  <thead>
-                    <tr>
-                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tank Code</th>
-                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Number of days in use</th>
-                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">First Day in use</th>
-                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Day in use</th>
-                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
-                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Details</th>
-                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fixed</th>
-                        
-                    </tr>
-                </thead>
-                <tbody>
-                  {% for cluster_label, tk_codes in tanks_groups.items() %}
-                      {% for tank_code in tk_codes %}
-                          <tr>
-                              <td>
-                                  <div class="d-flex px-2 py-1">
-                                      <div>
-                                          <img src="{{ url_for('static', filename='img/tank.png') }}" class="avatar avatar-equip me-3" alt="user6">
-                                      </div>
-                                      <div class="d-flex flex-column justify-content-center">
-                                          <!-- Display the meter code -->
-                                          <h6 class="mb-0 text-sm">{{ tank_code }}</h6>
-                                      </div>
-                                  </div>
-                              </td>
-                              <td class="align-middle text-center">
-                                <!-- Display the days_since_last_non_zero -->
-                                {% set tk_data_days = result_tanks[result_tanks['TANK_CODE'] == tank_code] %}
-                                {% set days_since_last_non_zero_tk = tk_data_days['last_date_less_minus20'].values[0] %}
-                                <p class="text-xs font-weight-bold mb-0">{{ days_since_last_non_zero_tk }}  Days</p>
-                             </td>
-                              <td class="align-middle text-center">
-                                  <!-- Retrieve and display the first and last date in use -->
-                                  {% set tk_data_single = leaks_data[leaks_data['TANK_CODE'] == tank_code] %}
-                                  {% set first_date_in_use_tk = tk_data_single['FOLIO_NUMBER'].min() %}
-                                  {% set last_date_in_use_tk = tk_data_single['FOLIO_NUMBER'].max() %}
-                                  <p class="text-xs font-weight-bold mb-0">{{ first_date_in_use_tk }}</p>
-                              </td>
-                              <td class="align-middle text-center">
-                                <!-- Retrieve and display the first and last date in use -->
-                                <p class="text-xs font-weight-bold mb-0">{{ last_date_in_use_tk }}</p>
-                            </td>
-                              <td class="align-middle text-center text-sm">
-                                  <!-- Display the status based on cluster label -->
-                                  {% if cluster_label == 'Cluster 0'%}
-                                      <p class="badge badge-sm bg-gradient-warning">Potential Theft</p>
-                                  {% elif cluster_label == 'Cluster 1' %}
-                                      <p class="badge badge-sm bg-gradient-success">Normal behaviour</p>
-                                  {% elif cluster_label == 'Cluster 2' %}
-                                      <p class="badge badge-sm bg-gradient-yellow">Old Theft</p>
-                                  {% elif cluster_label == 'Cluster 3' %}
-                                      <p class="badge badge-sm bg-gradient-danger">Potential Leak</p>
-                                  {% elif cluster_label == 'Cluster 4' %}
-                                      <p class="badge badge-sm bg-gradient-violet">Old Leak</p>
-                                  {% endif %}
-                              </td>
-                              <td class="align-middle text-center">
-                                <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;"><i class="fa fa-hand-paper-o text-dark me-2" aria-hidden="true"></i>Use</a>
-                              </td>
-                              <td class="align-middle text-center">
-                                <a class="btn btn-link text-success px-3 mb-0" href="javascript:;"><i class="fa fa-check-square text-success me-2" aria-hidden="true"></i>Checked</a>
-                              </td>
-                          </tr>
-                      {% endfor %}
-                  {% endfor %}
-              </tbody>                           
-                </table>
+                <div style="overflow-x: auto;">
+                  <div class="table-container">
+                    <table class="table align-items-center mb-0" id="table-tanks">
+                      <thead>
+                        <tr>
+                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tank Code
+                          </th>
+                          <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                            Number of days in use</th>
+                          <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                            First Day in use</th>
+                          <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                            Last
+                            Day in use</th>
+                          <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                            Status</th>
+
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for cluster_label, tk_codes in tanks_groups.items() %}
+                            {% for tank_code in tk_codes %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div>
+                                                <img src="{{ url_for('static', filename='img/tank.png') }}" class="avatar avatar-equip me-3" alt="user6">
+                                            </div>
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <!-- Display the meter code -->
+                                                <h6 class="mb-0 text-sm">{{ tank_code }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                      <!-- Display the days_since_last_non_zero -->
+                                      {% set tk_data_days = result_tanks[result_tanks['TANK_CODE'] == tank_code] %}
+                                      {% set days_since_last_non_zero_tk = tk_data_days['last_date_less_minus20'].values[0] %}
+                                      <p class="text-xs font-weight-bold mb-0">{{ days_since_last_non_zero_tk }}  Days</p>
+                                   </td>
+                                    <td class="align-middle text-center">
+                                        <!-- Retrieve and display the first and last date in use -->
+                                        {% set tk_data_single = leaks_data[leaks_data['TANK_CODE'] == tank_code] %}
+                                        {% set first_date_in_use_tk = tk_data_single['FOLIO_NUMBER'].min() %}
+                                        {% set last_date_in_use_tk = tk_data_single['FOLIO_NUMBER'].max() %}
+                                        <p class="text-xs font-weight-bold mb-0">{{ first_date_in_use_tk }}</p>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                      <!-- Retrieve and display the first and last date in use -->
+                                      <p class="text-xs font-weight-bold mb-0">{{ last_date_in_use_tk }}</p>
+                                  </td>
+                                    <td class="align-middle text-center text-sm">
+                                        <!-- Display the status based on cluster label -->
+                                        {% if cluster_label == 'Cluster 0'%}
+                                            <p class="badge-equip bg-gradient-warning">Potential Theft</p>
+                                        {% elif cluster_label == 'Cluster 1' %}
+                                            <p class="badge-equip bg-gradient-success">Normal</p>
+                                        {% elif cluster_label == 'Cluster 2' %}
+                                            <p class="badge-equip bg-gradient-yellow">Old Theft</p>
+                                        {% elif cluster_label == 'Cluster 3' %}
+                                            <p class="badge-equip bg-gradient-danger">Potential Leak</p>
+                                        {% elif cluster_label == 'Cluster 4' %}
+                                            <p class="badge-equip bg-gradient-grey">Old Leak</p>
+                                        {% endif %}
+                                    </td>
+                                   
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                    </table>
+                  </div>
+                  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+                  <script>
+                    $(document).ready(function () {
+                      $('#table-tanks').DataTable({
+                        "paging": true, // Enable pagination
+                        "searching": true,
+                        lengthMenu: [5],
+                        showPageSize: false,
+                        "language": { // Customize the pagination button labels
+                          "paginate": {
+                            "previous": '<i class="fa fa-chevron-left"></i>', // Font Awesome icon for Previous
+                            "next": '<i class="fa fa-chevron-right"></i>' // Font Awesome icon for Next
+                          }
+                        }
+                      });
+                      // Wrap search input in an input-group div with Font Awesome icon
+                      var searchInput = $('div.dataTables_filter input');
+                      searchInput.wrap('<div class="input-group"></div>'); // Wrap the input field
+
+                      // Add Font Awesome icon and placeholder to the search input
+                      searchInput.before('<span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>'); // Add Font Awesome icon
+                      searchInput.attr('placeholder', 'Type here...'); // Set placeholder text
+                      searchInput.addClass('form-control');
+                    });
+
+                  </script>
+                  <style>
+                    /* Hide the "Show" dropdown */
+                    .dataTables_length {
+                      display: none;
+                    }
+
+                    .dataTables_info {
+                      display: none;
+                    }
+
+                    .dataTables_filter label {
+                      font-size: 0;
+                    }
+
+
+
+                    .dataTables_filter {
+                      margin-left: 10px;
+                    }
+
+                    .table-container {
+                      overflow: hidden;
+                    }
+
+                    /* Pagination styles */
+                    .dataTables_paginate {
+                      margin-bottom: 10px;
+                      text-align: center;
+                    }
+
+                    .dataTables_paginate .paginate_button {
+                      padding: 4px 10px;
+                      margin-right: 4px;
+                      border-radius: 4px;
+                      /*border: 1px solid #ccc;*/
+                      background-color: #fff;
+                      color: #333;
+                      cursor: pointer;
+                      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+                    }
+
+                    .dataTables_paginate .paginate_button:hover {
+                      background: linear-gradient(310deg, #0B4E7C 0%, #01ADAF 100%);
+                      color: #fff;
+                      /* Optionally change text color on hover */
+                    }
+
+                    /* Custom Next and Previous buttons */
+                    .dataTables_paginate .paginate_button.next,
+                    .dataTables_paginate .paginate_button.previous {
+                      padding: 4px 12px;
+                      border-radius: 4px;
+                      /*border: 1px solid #ccc;*/
+                      background-color: #fff;
+                      color: #333;
+                      cursor: pointer;
+                      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+                      position: relative;
+                      /* Ensure pseudo-element position is relative to the button */
+                    }
+
+                    .dataTables_paginate .paginate_button.next:hover,
+                    .dataTables_paginate .paginate_button.previous:hover {
+                      background-color: #f2f2f2;
+                      color: #000;
+                    }
+
+                    /* Icon color on hover */
+                    .dataTables_paginate .paginate_button.next:hover i,
+                    .dataTables_paginate .paginate_button.previous:hover i {
+                      color: #fff;
+                      /* Set icon color to white */
+                    }
+                  </style>
+
+                </div>
+
+
               </div>
             </div>
           </div>
         </div>
+        
+
       </div>
+
+<br>
+      <script>
+        function fetchAndRenderPieChart() {
+          $.ajax({
+            url: '/get_tanks_counts', // Endpoint to fetch meter counts (same as defined in Flask route)
+            type: 'GET',
+            success: function (data) {
+              renderPieChart(data); // Render pie chart with fetched meter counts
+            },
+            error: function (xhr, status, error) {
+              console.error('Error fetching Tanks counts:', error);
+            }
+          });
+        }
+
+        /// Function to render the pie chart with meter counts data
+        function renderPieChart(TanksCounts) {
+          var labels = Object.keys(TanksCounts); // Extract labels (class names) from meter counts
+          var data = Object.values(TanksCounts); // Extract data (meter counts) from meter counts
+          var backgroundColors = ['#28a745', '#515151', '#ffc107','#f53939','#FA5F00']; // Background colors for each class
+
+          var ctx = document.getElementById('pie-chart').getContext('2d');
+          var pieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: labels,
+              datasets: [{
+                data: data,
+                backgroundColor: backgroundColors
+              }]
+            },
+            options: {
+              responsive: true, // Make the chart responsive (resize based on container)
+              maintainAspectRatio: false, // Allow the chart to resize freely
+              legend: {
+                display: true, // Display legend
+                labels: {
+                  fontColor: '#333', // Set legend label font color
+                  fontSize: 12, // Set legend label font size
+                  fontFamily: 'Arial, sans-serif', // Set legend label font family
+                  fontWeight: 'bold' // Make legend label font bold
+                }
+              },
+              title: {
+                display: true, // Display title
+                text: 'Meter Counts', // Set title text
+                fontSize: 16, // Set title font size
+                fontColor: '#333', // Set title font color
+                fontFamily: 'Arial, sans-serif', // Set title font family
+                fontWeight: 'bold' // Make title font bold
+              }
+            }
+          });
+        }
+
+
+        // Call fetchAndRenderPieChart function to fetch data and render the pie chart on page load
+        $(document).ready(function () {
+          fetchAndRenderPieChart();
+        });
+
+      </script>
       <footer class="footer pt-3  ">
         <div class="container-fluid">
           <div class="row align-items-center justify-content-lg-between">

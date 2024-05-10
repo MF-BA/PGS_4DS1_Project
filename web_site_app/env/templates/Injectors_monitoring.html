@@ -19,6 +19,49 @@
   <link href="{{ url_for('static',filename='css/nucleo-svg.css')}}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ url_for('static',filename='css/soft-ui-dashboard.css')}}?v=1.0.3" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+
+  <style>
+    /* Search bar */
+    .dataTables_filter {
+      margin-bottom: 10px;
+    }
+
+    .dataTables_filter input[type="search"] {
+      width: 200px;
+      /* Adjust width as needed */
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    }
+
+    /* Pagination */
+    .dataTables_paginate {
+      margin-top: 10px;
+    }
+
+    .dataTables_paginate .paginate_button {
+      padding: 4px 10px;
+      margin-right: 4px;
+      border-radius: 4px;
+      /*border: 1px solid #ccc;*/
+      background-color: #fff;
+      color: #ffffff;
+      cursor: pointer;
+      transition: background-color ease-in-out 0.15s, border-color ease-in-out 0.15s, color ease-in-out 0.15s;
+    }
+
+    .dataTables_paginate .paginate_button:hover {
+      background-color: #f2f2f2;
+    }
+  </style>
+
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">
@@ -227,7 +270,7 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{url_for('equipement_monitoring')}}">Home</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Equipement Monitoring</li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Injectors Monitoring</li>
           </ol>
           <h6 class="font-weight-bolder mb-0">Equipement</h6>
         </nav>
@@ -340,108 +383,236 @@
   
        
         
+    <div class="container-fluid py-4">
+      <div class="row mt-4">
 
-          <div class="card mb-4">
-            <div class="card-header pb-0">
-              <h6>Injectors Monitoring</h6>
-            </div>
-            <div class="card-body px-0 pt-0 pb-2">
-              <div class="table-responsive p-0">
-                <div style="overflow-x: auto;">
-                  <table class="table align-items-center mb-0">
-                    <thead>
-                        <tr>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Injector Code</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Number of days in use</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">First Day in use</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Day in use</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Use Meter</th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                      {% for cluster_label, inj_codes in inj_groups.items() %}
-                          {% for injector_code in inj_codes %}
-                              <tr>
-                                  <td>
-                                      <div class="d-flex px-2 py-1">
-                                          <div>
-                                              <img src="{{ url_for('static', filename='img/injector.png') }}" class="avatar avatar-equip me-3" alt="user6">
-                                          </div>
-                                          <div class="d-flex flex-column justify-content-center">
-                                              <!-- Display the meter code -->
-                                              <h6 class="mb-0 text-sm">{{ injector_code }}</h6>
-                                          </div>
-                                      </div>
-                                  </td>
-                                  <td class="align-middle text-center">
-                                    <!-- Display the days_since_last_non_zero -->
-                                    {% set inj_data_days = injector_result[injector_result['INJECTOR_CODE'] == injector_code] %}
-                                    {% set days_since_last_non_zero_inj = inj_data_days['last_date_non_zero'].values[0] %}
-                                    <p class="text-xs font-weight-bold mb-0">{{ days_since_last_non_zero_inj }}  Days</p>
-                                 </td>
-                                  <td class="align-middle text-center">
-                                      <!-- Retrieve and display the first and last date in use -->
-                                      {% set inj_data_single = injector_data[injector_data['INJECTOR_CODE'] == injector_code] %}
-                                      {% set first_date_in_use_inj = inj_data_single['FOLIO_NUMBER'].min() %}
-                                      {% set last_date_in_use_inj = inj_data_single['FOLIO_NUMBER'].max() %}
-                                      <p class="text-xs font-weight-bold mb-0">{{ first_date_in_use_inj }}</p>
-                                  </td>
-                                  <td class="align-middle text-center">
-                                    <!-- Retrieve and display the first and last date in use -->
-                                    <p class="text-xs font-weight-bold mb-0">{{ last_date_in_use_inj }}</p>
-                                </td>
-                                  <td class="align-middle text-center text-sm">
-                                      <!-- Display the status based on cluster label -->
-                                      {% if cluster_label == 'Cluster 0' %}
-                                          <p class="badge badge-sm bg-gradient-success">Healthy</p>
-                                      {% elif cluster_label == 'Cluster 1' %}
-                                          <p class="badge badge-sm bg-gradient-warning">Operational</p>
-                                      {% elif cluster_label == 'Cluster 2' %}
-                                          <p class="badge badge-sm bg-gradient-yellow">Requires inspection</p>
-                                      {% elif cluster_label == 'Cluster 3' %}
-                                          <p class="badge badge-sm bg-gradient-danger">Non-Operational</p>
-                                      {% endif %}
-                                  </td>
-
-                                  <td class="align-middle text-center">
-                                    <a class="btn btn-sm btn-round bg-gradient-primary px-3 mb-0" href="javascript:;"><i class="fa fa-hand-paper-o me-2" aria-hidden="true"></i>&nbsp;&nbsp;Use</a>
-                                    
-                                  </td>
-                                  
-                              </tr>
-                          {% endfor %}
-                      {% endfor %}
-                  </tbody>                                  
-                </table>
+        <div class="col-lg-4">
+          <div class="card h-100">
+            <div class="card-header pb-0 p-3">
+              <div class="row">
+                <div class="col-6 d-flex align-items-center">
+                  <h5 class="mb-0">Injectors Stats</h5>
                 </div>
               </div>
             </div>
+            <div class="card-body p-3 d-flex flex-column">
+
+              <div class="chart-container">
+                <canvas id="pie-chart" style="height: 300%;"></canvas> <!-- Set height to 100% -->
+            </div>
+            </div>
           </div>
-
         </div>
-      </div>
 
+        <div class="col-lg-8">
+          <div class="card h-100">
+            <div class="card-header pb-0">
+              <h6>Injectors Monitoring</h6>
+            </div>
+            <br>
+            <div class="card-body px-0 pt-0 pb-2">
+              <div class="table-responsive p-0">
+                <div style="overflow-x: auto;">
+                  <div class="table-container">
+                    <table class="table align-items-center mb-0" id="table-injector">
+                      <thead>
+                        <tr>
+                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Injector Code
+                          </th>
+                          <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                            Number of days in use</th>
+                          <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                            First Day in use</th>
+                          <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                            Last
+                            Day in use</th>
+                          <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                            Status</th>
+
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for cluster_label, inj_codes in inj_groups.items() %}
+                            {% for injector_code in inj_codes %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div>
+                                                <img src="{{ url_for('static', filename='img/injector.png') }}" class="avatar avatar-equip me-3" alt="user6">
+                                            </div>
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <!-- Display the meter code -->
+                                                <h6 class="mb-0 text-sm">{{ injector_code }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                      <!-- Display the days_since_last_non_zero -->
+                                      {% set inj_data_days = injector_result[injector_result['INJECTOR_CODE'] == injector_code] %}
+                                      {% set days_since_last_non_zero_inj = inj_data_days['last_date_non_zero'].values[0] %}
+                                      <p class="text-xs font-weight-bold mb-0">{{ days_since_last_non_zero_inj }}  Days</p>
+                                   </td>
+                                    <td class="align-middle text-center">
+                                        <!-- Retrieve and display the first and last date in use -->
+                                        {% set inj_data_single = injector_data[injector_data['INJECTOR_CODE'] == injector_code] %}
+                                        {% set first_date_in_use_inj = inj_data_single['FOLIO_NUMBER'].min() %}
+                                        {% set last_date_in_use_inj = inj_data_single['FOLIO_NUMBER'].max() %}
+                                        <p class="text-xs font-weight-bold mb-0">{{ first_date_in_use_inj }}</p>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                      <!-- Retrieve and display the first and last date in use -->
+                                      <p class="text-xs font-weight-bold mb-0">{{ last_date_in_use_inj }}</p>
+                                  </td>
+                                    <td class="align-middle text-center text-sm">
+                                        <!-- Display the status based on cluster label -->
+                                        {% if cluster_label == 'Cluster 0' %}
+                                            <p class="badge-equip bg-gradient-success">Operational</p>
+                                        {% elif cluster_label == 'Cluster 1' %}
+                                            <p class="badge-equip bg-gradient-success">Operational</p>
+                                        {% elif cluster_label == 'Cluster 2' %}
+                                            <p class="badge-equip bg-gradient-yellow">Inspection</p>
+                                        {% elif cluster_label == 'Cluster 3' %}
+                                            <p class="badge-equip bg-gradient-danger">Non-Operational</p>
+                                        {% endif %}
+                                    </td>
+  
+                                    
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>      
+                    </table>
+                  </div>
+                  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+                  <script>
+                    $(document).ready(function () {
+                      $('#table-injector').DataTable({
+                        "paging": true, // Enable pagination
+                        "searching": true,
+                        lengthMenu: [5],
+                        showPageSize: false,
+                        "language": { // Customize the pagination button labels
+                          "paginate": {
+                            "previous": '<i class="fa fa-chevron-left"></i>', // Font Awesome icon for Previous
+                            "next": '<i class="fa fa-chevron-right"></i>' // Font Awesome icon for Next
+                          }
+                        }
+                      });
+                      // Wrap search input in an input-group div with Font Awesome icon
+                      var searchInput = $('div.dataTables_filter input');
+                      searchInput.wrap('<div class="input-group"></div>'); // Wrap the input field
+
+                      // Add Font Awesome icon and placeholder to the search input
+                      searchInput.before('<span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>'); // Add Font Awesome icon
+                      searchInput.attr('placeholder', 'Type here...'); // Set placeholder text
+                      searchInput.addClass('form-control');
+                    });
+
+                  </script>
+                  <style>
+                    /* Hide the "Show" dropdown */
+                    .dataTables_length {
+                      display: none;
+                    }
+
+                    .dataTables_info {
+                      display: none;
+                    }
+
+                    .dataTables_filter label {
+                      font-size: 0;
+                    }
+
+
+
+                    .dataTables_filter {
+                      margin-left: 10px;
+                    }
+
+                    .table-container {
+                      overflow: hidden;
+                    }
+
+                    /* Pagination styles */
+                    .dataTables_paginate {
+                      margin-bottom: 10px;
+                      text-align: center;
+                    }
+
+                    .dataTables_paginate .paginate_button {
+                      padding: 4px 10px;
+                      margin-right: 4px;
+                      border-radius: 4px;
+                      /*border: 1px solid #ccc;*/
+                      background-color: #fff;
+                      color: #333;
+                      cursor: pointer;
+                      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+                    }
+
+                    .dataTables_paginate .paginate_button:hover {
+                      background: linear-gradient(310deg, #0B4E7C 0%, #01ADAF 100%);
+                      color: #fff;
+                      /* Optionally change text color on hover */
+                    }
+
+                    /* Custom Next and Previous buttons */
+                    .dataTables_paginate .paginate_button.next,
+                    .dataTables_paginate .paginate_button.previous {
+                      padding: 4px 12px;
+                      border-radius: 4px;
+                      /*border: 1px solid #ccc;*/
+                      background-color: #fff;
+                      color: #333;
+                      cursor: pointer;
+                      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+                      position: relative;
+                      /* Ensure pseudo-element position is relative to the button */
+                    }
+
+                    .dataTables_paginate .paginate_button.next:hover,
+                    .dataTables_paginate .paginate_button.previous:hover {
+                      background-color: #f2f2f2;
+                      color: #000;
+                    }
+
+                    /* Icon color on hover */
+                    .dataTables_paginate .paginate_button.next:hover i,
+                    .dataTables_paginate .paginate_button.previous:hover i {
+                      color: #fff;
+                      /* Set icon color to white */
+                    }
+                  </style>
+
+                </div>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+        
+
+      </div>
+<br>
     <div class="card mb-4">
       <div class="card-header pb-0 p-3">
           <div class="row">
               <div class="col-6 d-flex align-items-center">
-                  <h5 class="mb-0">Add a new Injector</h5>
+                  <h5 class="mb-0">Add a new record</h5>
               </div>
           </div>
       </div>
       <div class="card-body p-3 d-flex flex-column">
-          <form action="/add_injector" method="post" id="injector-form" role="form">
-              <!-- Meter Code -->
+          <form action="/injector_record" method="post" id="injector-form" role="form">
+              <!-- Injector Code -->
+        
               <div class="mb-3">
-                  <h6>Injector Code</h6>
-                  <input type="text" class="form-control" id="injector_code" name="injector_code" placeholder="Injector Code" aria-label="Injector Code">
-              </div>
-              <!-- Date -->
-              <div class="mb-3">
-                  <h6>Date</h6>
-                  <input type="date" class="form-control" id="folio_number_inj" name="folio_number_inj" placeholder="Date" aria-label="Date">
+                <label for="injector_code" class="form-label">Injector Code</label>
+                <select class="form-select" id="injector_code" name="injector_code" aria-label="Injector Code">
+                  <option value="" selected disabled>Select Injector Code</option>
+                  
+                </select>
               </div>
               <!-- Quantity Difference -->
               <div class="mb-3">
@@ -450,13 +621,90 @@
               </div>
               <!-- Submit Button -->
               <button class="btn bg-gradient-primary mb-0" type="submit" value="submit">
-                  <i class="fas fa-plus"></i>&nbsp;&nbsp;Add New Injector
+                  <i class="fas fa-plus"></i>&nbsp;&nbsp;Add New Record
               </button>
           </form>
-          {{ message_injector_add }}
+          <br>
+          {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} custom-alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+<style>
+  .custom-alert {
+  color: white;
+  font-weight: bold;
+  /* Add any other custom styles as needed */
+}
+
+</style>
       </div>
   </div>
+  <script>
+    function fetchAndRenderPieChart() {
+      $.ajax({
+        url: '/get_injector_counts', // Endpoint to fetch meter counts (same as defined in Flask route)
+        type: 'GET',
+        success: function (data) {
+          renderPieChart(data); // Render pie chart with fetched meter counts
+        },
+        error: function (xhr, status, error) {
+          console.error('Error fetching injector counts:', error);
+        }
+      });
+    }
 
+    /// Function to render the pie chart with meter counts data
+    function renderPieChart(injectorCounts) {
+      var labels = Object.keys(injectorCounts); // Extract labels (class names) from meter counts
+      var data = Object.values(injectorCounts); // Extract data (meter counts) from meter counts
+      var backgroundColors = ['#dc3545', '#ffc107', '#28a745']; // Background colors for each class
+
+      var ctx = document.getElementById('pie-chart').getContext('2d');
+      var pieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: backgroundColors
+          }]
+        },
+        options: {
+          responsive: true, // Make the chart responsive (resize based on container)
+          maintainAspectRatio: false, // Allow the chart to resize freely
+          legend: {
+            display: true, // Display legend
+            labels: {
+              fontColor: '#333', // Set legend label font color
+              fontSize: 12, // Set legend label font size
+              fontFamily: 'Arial, sans-serif', // Set legend label font family
+              fontWeight: 'bold' // Make legend label font bold
+            }
+          },
+          title: {
+            display: true, // Display title
+            text: 'Meter Counts', // Set title text
+            fontSize: 16, // Set title font size
+            fontColor: '#333', // Set title font color
+            fontFamily: 'Arial, sans-serif', // Set title font family
+            fontWeight: 'bold' // Make title font bold
+          }
+        }
+      });
+    }
+
+
+    // Call fetchAndRenderPieChart function to fetch data and render the pie chart on page load
+    $(document).ready(function () {
+      fetchAndRenderPieChart();
+    });
+
+  </script>
       
       <footer class="footer pt-3  ">
         <div class="container-fluid">
@@ -549,6 +797,28 @@
       }
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
+    
+    document.addEventListener("DOMContentLoaded", function () {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "/get_injector_codes");
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          var data = JSON.parse(xhr.responseText);
+          var selectElement = document.getElementById("injector_code");
+          selectElement.innerHTML = '<option value="" selected disabled>Select Injector Code</option>';
+          data.forEach(function (injectorCode) {
+            var option = document.createElement("option");
+            option.value = injectorCode;
+            option.text = injectorCode;
+            selectElement.appendChild(option);
+          });
+        } else {
+          console.error("Request failed: " + xhr.status);
+        }
+      };
+      xhr.send();
+    });
+
   </script>
   <!-- Github buttons -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>

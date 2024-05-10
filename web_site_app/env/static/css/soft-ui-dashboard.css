@@ -20132,8 +20132,8 @@ label,
   background-image: linear-gradient(45deg, #ffff00 0%, #ffd700 100%);
   -webkit-text-fill-color: #000;
 }
-.bg-gradient-violet {
-  background-image: linear-gradient(45deg, #8500FF 0%, #9467BD 100%);
+.bg-gradient-grey {
+  background-image: linear-gradient(45deg, #515151 0%, #BCBCBC 100%);
   -webkit-text-fill-color: #fff;
 }
 .bg-gradient-light {
