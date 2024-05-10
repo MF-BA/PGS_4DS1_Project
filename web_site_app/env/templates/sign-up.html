@@ -119,11 +119,23 @@
                     name="password" required>
                 </div>
                 <div class="form-check form-check-info text-left">
-                  <input class="form-check-input" type="checkbox" id="flexCheckDefault" checked>
-                  <label class="form-check-label" for="flexCheckDefault">
-                    I agree to the <a href="javascript:;" class="text-dark font-weight-bolder">Terms and Conditions</a>
+                  <input class="form-check-input" type="checkbox" value="" id="agreeCheckbox" required>
+                  <label class="form-check-label" for="agreeCheckbox">
+                      I agree the <a href="javascript:;" class="text-dark font-weight-bolder">Terms and Conditions</a>
                   </label>
+                  <div class="invalid-feedback">You must agree to the Terms and Conditions.</div>
                 </div>
+                <script>
+                  document.addEventListener("DOMContentLoaded", function() {
+                      const agreeCheckbox = document.getElementById('agreeCheckbox');
+                      const signUpButton = document.getElementById('signUpButton');
+              
+                      agreeCheckbox.addEventListener('change', function() {
+                          signUpButton.disabled = !agreeCheckbox.checked;
+                      });
+                  });
+                </script>
+              
                 <div class="text-center">
                   {% with messages = get_flashed_messages(with_categories=true) %}
                   {% if messages %}
