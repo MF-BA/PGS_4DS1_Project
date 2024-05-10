@@ -114,7 +114,7 @@ def delivery_display(delivery_id):
 
    # derive the iframe content to be rendered in the HTML body
    iframe = mapObj.get_root()._repr_html_()
-   return render_template('Delivery_dispaly.html', data=departure, iframe=iframe, best_distance=best_distance, best_consumption=best_consumption, best_duration=best_duration,best_path_details=best_path_details,)
+   return render_template('Delivery_dispaly.html', data=departure, iframe=iframe, best_distance=best_distance, best_consumption=best_consumption, best_duration=best_duration,best_path_details=best_path_details,delivery_id=delivery_id,)
 
 @app.route('/delivery_management')
 def delivery_management():
