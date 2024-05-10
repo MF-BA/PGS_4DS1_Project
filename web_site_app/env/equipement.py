@@ -325,7 +325,7 @@ def cluster_tanks_data(tanks_data):
     plt.title('K-Means Clustering with PCA')
     plt.legend()
     plt.grid(True)
-    plt.show()
+    #plt.show()
 
     # Save the clustering result DataFrame
     result_df.to_csv('tanks_clustering_result.csv', index=False)

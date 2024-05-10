@@ -246,10 +246,6 @@ def all_tanks():
     return render_template('All_tanks.html', tanks_inf=tanks_inf,tank_names=tank_names,decomposed_days_with_best_condition=decomposed_days_with_best_condition,tank_name=tank_name)
 
 
-@app.route('/orders_management')
-def orders_management():
-   return render_template('Orders_management.html')
-
 @app.template_filter('datetime')
 def format_datetime(value, format='%d/%m/%Y'):
     """Format a datetime object."""
