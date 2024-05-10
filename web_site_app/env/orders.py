@@ -31,8 +31,8 @@ def orders_prediction(gainloss, customer_number, product_number):
             model = SARIMAX(train_data, order=(4,1,1), seasonal_order=(1,0,0,52))  
             model_fit = model.fit()
             pred = model_fit.forecast(steps=1)  
-            future_predictions.loc[end_date] = pred[0]  
-            train_data = train_data._append(pd.Series(pred[0], index=[end_date]))  
+            future_predictions.loc[end_date] = pred.iloc[0]  
+            train_data = train_data._append(pd.Series(pred.iloc[0], index=[end_date]))  
         except Exception as e:
             print("Error occurred for date:", end_date)
             print("Error details:", str(e))

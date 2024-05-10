@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request,jsonify
 from equipement import cluster_meter_data
 from equipement import cluster_injector_data
 from orders import orders_prediction
@@ -63,18 +63,36 @@ def equipement_monitoring():
 def delivery_management():
    return render_template('Delivery_management.html')
 
+###########
+def get_unique_customer_numbers():
+    customer_numbers = Orders.distinct("CUSTOMER_NUMBER")
+    return customer_numbers
 
+def get_unique_product_numbers(customer_number):
+    product_numbers = Orders.distinct("TERMINAL_PRODUCT_NUMBER", {"CUSTOMER_NUMBER": customer_number})
+    print("Product Numbers:", product_numbers)
+    return product_numbers
+###########
 
+@app.route('/tahfoun')
+def tahfoun():
+    # Fetch unique customer numbers
+    customer_numbers = get_unique_customer_numbers()
+    return render_template('testi.html', customer_numbers=customer_numbers)
 
+@app.route('/get_products/<int:customer_number>')
+def get_products(customer_number):
+    print(customer_number)
+    product_numbers = get_unique_product_numbers(customer_number)
+    return jsonify({'product_numbers': product_numbers})
 
-@app.route('/orders_prediction_test')
-def get_orders_prediction():
+@app.route('/selected_values/<int:customer_number>/<int:product_number>')
+def selected_values(customer_number, product_number):
     orders_data = pd.DataFrame(list(Orders.find()))  
-    customer_number = 7 
-    product_number = 4 
-    future_predictions = orders_prediction(orders_data, customer_number, product_number)  
-    print("future_predictions:", future_predictions)
-    return render_template('testorder.html', orders_data=orders_data, future_predictions=future_predictions)
+    future_predictions = orders_prediction(orders_data, customer_number, product_number)
+    future_predictions_df = pd.DataFrame(future_predictions, columns=['Forecast'])
+    future_predictions_df['Date'] = future_predictions_df.index
+    return jsonify({'future_predictions': future_predictions_df.to_dict(orient='records')})
 
 
 @app.route('/orders_management')
@@ -82,10 +100,9 @@ def orders_management():
     orders_data = pd.DataFrame(list(Orders.find()))  
     orders_data['FOLIO_NUMBER']= pd.to_datetime(orders_data['FOLIO_NUMBER'])
     orders_data = orders_data.sort_values(by='FOLIO_NUMBER', ascending=False)
-    return render_template('Orders_management.html', orders_data=orders_data, datetime=datetime)
+    customer_numbers = get_unique_customer_numbers()
 
-
-
+    return render_template('Orders_management.html', orders_data=orders_data, datetime=datetime,customer_numbers=customer_numbers)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0")
