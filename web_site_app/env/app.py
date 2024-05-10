@@ -63,6 +63,7 @@ def equipement_monitoring():
 def delivery_management():
    return render_template('Delivery_management.html')
 
+
 ###########
 def get_unique_customer_numbers():
     customer_numbers = Orders.distinct("CUSTOMER_NUMBER")
