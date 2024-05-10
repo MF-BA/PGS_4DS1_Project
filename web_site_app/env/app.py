@@ -4,6 +4,7 @@ from pymongo import MongoClient
 from datetime import datetime
 import pandas as pd
 from flask_pymongo import PyMongo
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -27,6 +28,15 @@ def dashboard():
 def sign_up():
     return render_template('sign-up.html')
 
+@app.route('/get_meter_codes', methods=['GET'])
+def get_meter_codes():
+    # Retrieve unique meter codes from MongoDB
+    unique_meter_codes = meter_collection.distinct("METER_CODE")
+
+    # Return the list of unique meter codes as JSON
+    return jsonify(unique_meter_codes)
+
+
 @app.route('/inventory_management')
 def inventory_management():
    return render_template('Inventory_management.html')
@@ -39,6 +49,28 @@ def orders_management():
 def format_datetime(value, format='%d/%m/%Y'):
     """Format a datetime object."""
     return pd.to_datetime(value, format='%Y%m%d').strftime(format)
+@app.route('/get_meter_counts', methods=['GET'])
+def get_meter_counts():
+    # Fetch meter data and perform clustering
+    meter_data = pd.DataFrame(list(meter_collection.find()))
+    result_df = cluster_meter_data(meter_data)
+    
+    # Count the number of meters for each cluster
+    meter_counts = {}
+    for cluster_label in range(4):
+        if cluster_label == 0 or cluster_label == 1:
+            # Combine counts of clusters 0 and 1
+            combined_cluster_data = result_df[result_df['cluster'].isin([0, 1])]
+            meter_count = len(combined_cluster_data)
+            meter_counts['Cluster 0+1'] = meter_count
+        else:
+            cluster_data = result_df[result_df['cluster'] == cluster_label]
+            meter_count = len(cluster_data)
+            meter_counts[f'Cluster {cluster_label}'] = meter_count
+
+    # Pass meter counts to the template along with other data
+    return jsonify(meter_counts)
+
 
 @app.route('/meters_monitoring')
 def meters_monitoring():
