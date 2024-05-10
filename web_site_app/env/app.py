@@ -1,6 +1,9 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request,jsonify
 from equipement import cluster_meter_data
 from equipement import cluster_injector_data
+from orders import orders_prediction
+
+
 from pymongo import MongoClient
 from datetime import datetime
 import pandas as pd
@@ -12,6 +15,8 @@ import polyline
 from shapely.geometry import LineString
 import geopandas as gpd
 import math
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+import matplotlib.pyplot as plt
 
 app = Flask(__name__)
 
@@ -24,6 +29,7 @@ injector_collection = db['Injectors']
 delivery_collection = db['Delivery']
 delivery_detailed_collection = db['Delivery_detailed']
 destination_collection = db['Destinations']
+Orders = db['Orders']
 
 @app.route('/')
 def index():
@@ -37,9 +43,6 @@ def dashboard():
 def inventory_management():
    return render_template('Inventory_management.html')
 
-@app.route('/orders_management')
-def orders_management():
-   return render_template('Orders_management.html')
 
 @app.template_filter('datetime')
 def format_datetime(value, format='%d/%m/%Y'):
@@ -133,6 +136,48 @@ def delivery_management():
                                           (delivery_data['LAST_FOLIO_NUMBER'].dt.month == current_month)].shape[0]
    items_on_page = delivery_data[start:end]
    return render_template('Delivery_management.html',delivery_data=items_on_page,total_pages=total_pages,page=page,deliveries_this_month=deliveries_this_month)
+
+
+###########
+def get_unique_customer_numbers():
+    customer_numbers = Orders.distinct("CUSTOMER_NUMBER")
+    return customer_numbers
+
+def get_unique_product_numbers(customer_number):
+    product_numbers = Orders.distinct("TERMINAL_PRODUCT_NUMBER", {"CUSTOMER_NUMBER": customer_number})
+    print("Product Numbers:", product_numbers)
+    return product_numbers
+###########
+
+@app.route('/tahfoun')
+def tahfoun():
+    # Fetch unique customer numbers
+    customer_numbers = get_unique_customer_numbers()
+    return render_template('testi.html', customer_numbers=customer_numbers)
+
+@app.route('/get_products/<int:customer_number>')
+def get_products(customer_number):
+    print(customer_number)
+    product_numbers = get_unique_product_numbers(customer_number)
+    return jsonify({'product_numbers': product_numbers})
+
+@app.route('/selected_values/<int:customer_number>/<int:product_number>')
+def selected_values(customer_number, product_number):
+    orders_data = pd.DataFrame(list(Orders.find()))  
+    future_predictions = orders_prediction(orders_data, customer_number, product_number)
+    future_predictions_df = pd.DataFrame(future_predictions, columns=['Forecast'])
+    future_predictions_df['Date'] = future_predictions_df.index
+    return jsonify({'future_predictions': future_predictions_df.to_dict(orient='records')})
+
+
+@app.route('/orders_management')
+def orders_management():
+    orders_data = pd.DataFrame(list(Orders.find()))  
+    orders_data['FOLIO_NUMBER']= pd.to_datetime(orders_data['FOLIO_NUMBER'])
+    orders_data = orders_data.sort_values(by='FOLIO_NUMBER', ascending=False)
+    customer_numbers = get_unique_customer_numbers()
+
+    return render_template('Orders_management.html', orders_data=orders_data, datetime=datetime,customer_numbers=customer_numbers)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
