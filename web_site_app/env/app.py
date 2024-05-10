@@ -1,11 +1,13 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, url_for, request, redirect,session,flash
 from equipement import cluster_injector_data,cluster_tanks_data,cluster_meter_data
 from pymongo import MongoClient
 from datetime import datetime
 import pandas as pd
 from flask_pymongo import PyMongo
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+app.secret_key = 'fuel_vision_Project_PGS'
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["MONGO_URI"] = "mongodb://localhost:27017/PGS"
 mongo = PyMongo(app).db
@@ -14,18 +16,61 @@ db = client['PGS']
 meter_collection = db['Meters']
 injector_collection = db['Injectors']
 tanks_leaks_collection = db['Leaks_Thefts']
+users=db['Users']
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        user = users.find_one({'email': request.form['email']})
+
+        if user and check_password_hash(user['password'], request.form['password']):
+            # Authentication success
+            session['user_id'] = str(user['_id'])
+            return redirect(url_for('dashboard'))
+        else:
+            # Authentication fails
+            flash('Invalid username or password', 'danger')
+            return redirect(url_for('index'))
+
     return render_template('sign-in.html')
+
+@app.route('/sign_up', methods=['GET', 'POST'])
+def sign_up():
+    if request.method == 'POST':
+        #Users=users.find()
+        existing_user = users.find_one({'email': request.form['email']})
+
+        if existing_user is None:
+            # Here we use the default method, which is 'pbkdf2:sha256'
+            hashed_password = generate_password_hash(request.form['password'])
+            users.insert_one({
+                'first_name': request.form['first_name'],
+                'last_name': request.form['last_name'],
+                'email': request.form['email'],
+                'password': hashed_password
+            })
+            return redirect(url_for('index'))  # Make sure this is the intended redirect
+        else:
+            flash('That email already exists!','danger')  # Use a category 'error' for styling if desired
+            return redirect(url_for('sign_up'))  # Redirect back to the sign-up page
+
+    return render_template('sign-up.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)  # Remove user_id from session
+    return redirect(url_for('index'))
 
 @app.route('/dashboard')
 def dashboard():
-   return render_template('Dashboard.html')
+    if 'user_id' not in session:
+        # Flash a message that you'll use in the login page
+        flash('You must be logged in to view the dashboard.','danger')
+        # Redirect to login page if the user is not logged in
+        return redirect(url_for('index', next=request.url))
+    return render_template('Dashboard.html')
 
-@app.route('/sign_up')
-def sign_up():
-    return render_template('sign-up.html')
+
 
 @app.route('/inventory_management')
 def inventory_management():
@@ -153,6 +198,8 @@ def add_injector():
 @app.route('/delivery_management')
 def delivery_management():
    return render_template('Delivery_management.html')
+
+
 
 if __name__ == "__main__":
     '''app.run(debug=True)'''
