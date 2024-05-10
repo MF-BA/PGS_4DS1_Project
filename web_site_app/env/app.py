@@ -112,7 +112,7 @@ def tank(tank_code):
     terminal_product_number = tanks_inf.loc[tanks_inf['TANK_CODE'] == tank_code, 'NAME'].values[0]
     # Filter tanks_inf DataFrame to include only rows for the selected tank_code
     selected_tank_inf = tanks_data[tanks_data['TANK_CODE'] == tank_code]
-        
+    selected_tank_inf = selected_tank_inf.drop(columns=['_id'])
         # Sort the filtered DataFrame by date in descending order
     sorted_tank_inf = selected_tank_inf.sort_values(by='FOLIO_NUMBER', ascending=False)
         
@@ -140,12 +140,15 @@ def tank(tank_code):
     decomposed_days_with_best_condition = [decompose_date(date) for date in days_with_best_condition]
     print(decomposed_days_with_best_condition)
 
+    table_html = sorted_tank_inf.to_html(classes='table table-striped', index=False)
+
+
     # Pass the decomposed dates to the template
     return render_template('tanktest.html', tanks_inf=tanks_inf, tanknb=tanknb, shell_capacity=tank_shell_capacity,
-                        product_name=terminal_product_number, tank_name=tank_name, last_date=last_date,
-                        last_closing_physical=last_closing_physical, decomposed_days_with_best_condition=decomposed_days_with_best_condition,
-                        tank_names=tank_names)
-    
+                            product_name=terminal_product_number, tank_name=tank_name, last_date=last_date,
+                            last_closing_physical=last_closing_physical, decomposed_days_with_best_condition=decomposed_days_with_best_condition,
+                            tank_names=tank_names,table_html=table_html)
+
     #print(days_with_best_condition)
 
     #return render_template('tanktest.html', tanks_inf=tanks_inf, tanknb=tanknb, shell_capacity=tank_shell_capacity,product_name=terminal_product_number,tank_name=tank_name,last_date=last_date,last_closing_physical=last_closing_physical,days_with_best_condition=days_with_best_condition,tank_names=tank_names)
@@ -158,8 +161,47 @@ def all_tanks():
      # Retrieve tanks data from MongoDB and convert it into a DataFrame
     tanks_data = pd.DataFrame(list(tanks.find()))
     tanks_inf = pd.DataFrame(list(tanks_info.find()))
-    print(tanks_data)
-    return render_template('All_tanks.html', tanks_inf=tanks_inf)
+    # Extract the TANK_CODE column and convert it into a dictionary of tank codes and names
+    tank_name = tanks_data['TANK_CODE']
+
+     # Define a dictionary mapping tank codes to tank names
+    tank_names = {
+        'TK-101': 'Tank 101',
+        'TK-102': 'Tank 102',
+        'TK-103': 'Tank 103',
+        'TK-104': 'Tank 104',
+        'TK-105': 'Tank 105',
+        'TK-106': 'Tank 106',
+        'TK-201': 'Tank 201',
+        'TK-202': 'Tank 202',
+        'TK-203': 'Tank 203',
+        'TK-204': 'Tank 204',
+        'TK-205': 'Tank 205',
+        'TK-206': 'Tank 206',
+        'TK-301': 'Tank 301',
+        'TK-302': 'Tank 302',
+        'TK-303': 'Tank 303'
+        # Add more tank names as needed
+    }
+ 
+    weather_df = scrape_weather_data()
+      # Filter weather_df to include only rows where bestcondition is 1
+    weather_df_filtered = weather_df[weather_df['bestcondition'] == 1]
+    print(weather_df)
+     # Get the days from the filtered DataFrame
+    days_with_best_condition = list(weather_df_filtered['date'])
+    def decompose_date(date_str):
+        # Split the date string into day and month parts
+        day = int(date_str[3:5])
+        month_name = date_str[5:].strip()  # Remove any leading or trailing spaces
+        # Map the month name to its corresponding number (1 for January, 2 for February, etc.)
+        month_number = datetime.strptime(month_name, "%b").month
+        return day, month_number
+    # Decompose each date and pass the decomposed values to the template
+    decomposed_days_with_best_condition = [decompose_date(date) for date in days_with_best_condition]
+    print(decomposed_days_with_best_condition)
+
+    return render_template('All_tanks.html', tanks_inf=tanks_inf,tank_names=tank_names,decomposed_days_with_best_condition=decomposed_days_with_best_condition,tank_name=tank_name)
 
 
 @app.route('/orders_management')

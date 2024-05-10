@@ -145,7 +145,7 @@
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link  " href="{{url_for('inventory_management')}}">
+                  <a class="nav-link  active" href="{{url_for('inventory_management')}}">
                     <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                       <svg width="12px" height="12px" viewBox="0 0 42 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <title>office</title>
@@ -206,7 +206,7 @@
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link  active" href="{{url_for('equipement_monitoring')}}">
+                  <a class="nav-link " href="{{url_for('equipement_monitoring')}}">
                     <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                       <svg width="12px" height="12px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <title>settings</title>
@@ -444,15 +444,29 @@
                   </div>
               </div>
           </div>
-          <div class="col-sm-10 col-xl-3"style="margin-top: 20px; padding-left: 20px;">
-            <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
-                <div class="ms-3">
-                  <h6 class="mb-0">Gauge</h6>
-                  <div id="gauge_div" style="width: 800px; height: 320px; padding-left: 10px; margin-top: 20px;"></div>
+         
+          <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-10 col-xl-3" style="margin-top: 20px; padding-left: 23px;">
+                    <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                        <div class="ms-3">
+                            <h6 class="mb-0">Gauge</h6>
+                            <div id="gauge_div" style="width: 800px; height: 320px; padding-left: 10px; margin-top: 20px;"></div>
+                        </div>
+                    </div>
                 </div>
+                <div class="col-sm-10 col-xl-9" style="margin-top: 20px; padding-left: 23px;">
+                  <div class="bg-secondary rounded p-4" style="max-height: 421px; overflow-y: auto;">
+                      <!-- Tank information table -->
+                      {{ table_html | safe }}
+                  </div>
+              </div>
             </div>
-          </div>
-          
+        </div>
+        
+        
+     
+        
 
             <!-- Sales Chart End -->
           
