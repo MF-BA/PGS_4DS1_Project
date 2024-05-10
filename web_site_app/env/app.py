@@ -26,6 +26,7 @@ def index():
         if user and check_password_hash(user['password'], request.form['password']):
             # Authentication success
             session['user_id'] = str(user['_id'])
+            session['user_name'] = user['last_name']
             return redirect(url_for('dashboard'))
         else:
             # Authentication fails
