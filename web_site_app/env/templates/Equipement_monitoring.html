@@ -226,7 +226,7 @@
       <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
+            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Home</a></li>
             <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Equipement Monitoring</li>
           </ol>
           <h6 class="font-weight-bolder mb-0">Equipement</h6>
@@ -336,467 +336,176 @@
         </div>
       </div>
     </nav>
-    <!-- End Navbar -->
-    <div class="container-fluid py-4">
-      <div class="row">
-        <div class="col-12">
-          <div class="card mb-4">
-            <div class="card-header pb-0">
-              <h6>Meters Monitoring</h6>
-            </div>
-            <div class="card-body px-0 pt-0 pb-2">
-              <div class="table-responsive p-0">
-                <div style="overflow-x: auto;">
-                <table class="table align-items-center mb-0">
-                    <thead>
-                        <tr>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Meter Code</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Number of days in use</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">First Day in use</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Day in use</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Use Meter</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fix Meter</th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                      {% for cluster_label, meter_codes in meter_groups.items() %}
-                          {% for meter_code in meter_codes %}
-                              <tr>
-                                  <td>
-                                      <div class="d-flex px-2 py-1">
-                                          <div>
-                                              <img src="{{ url_for('static', filename='img/meter.png') }}" class="avatar avatar-equip me-3" alt="user6">
-                                          </div>
-                                          <div class="d-flex flex-column justify-content-center">
-                                              <!-- Display the meter code -->
-                                              <h6 class="mb-0 text-sm">{{ meter_code }}</h6>
-                                          </div>
-                                      </div>
-                                  </td>
-                                  <td class="align-middle text-center">
-                                    <!-- Display the days_since_last_non_zero -->
-                                    {% set meter_data_days = meter_result[meter_result['METER_CODE'] == meter_code] %}
-                                    {% set days_since_last_non_zero = meter_data_days['last_date_non_zero'].values[0] %}
-                                    <p class="text-xs font-weight-bold mb-0">{{ days_since_last_non_zero }}  Days</p>
-                                 </td>
-                                  <td class="align-middle text-center">
-                                      <!-- Retrieve and display the first and last date in use -->
-                                      {% set meter_data_single = meter_data[meter_data['METER_CODE'] == meter_code] %}
-                                      {% set first_date_in_use = meter_data_single['FOLIO_NUMBER'].min() %}
-                                      {% set last_date_in_use = meter_data_single['FOLIO_NUMBER'].max() %}
-                                      
-                                      <p class="text-xs font-weight-bold mb-0">{{ first_date_in_use|datetime }}</p>
-                                  </td>
-                                  <td class="align-middle text-center">
-                                    <!-- Retrieve and display the first and last date in use -->
-                                    
-                                    <p class="text-xs font-weight-bold mb-0">{{ last_date_in_use|datetime }}</p>
-                                </td>
-                                  <td class="align-middle text-center text-sm">
-                                      <!-- Display the status based on cluster label -->
-                                      {% if cluster_label == 'Cluster 0' %}
-                                          <p class="badge badge-sm bg-gradient-success">Healthy</p>
-                                      {% elif cluster_label == 'Cluster 1' %}
-                                          <p class="badge badge-sm bg-gradient-warning">Operational</p>
-                                      {% elif cluster_label == 'Cluster 2' %}
-                                          <p class="badge badge-sm bg-gradient-yellow">Requires inspection</p>
-                                      {% elif cluster_label == 'Cluster 3' %}
-                                          <p class="badge badge-sm bg-gradient-danger">Non-Operational</p>
-                                      {% endif %}
-                                  </td>
-                                  <td class="align-middle text-center">
-                                    <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;"><i class="fa fa-hand-paper-o text-dark me-2" aria-hidden="true"></i>Use</a>
-                                  </td>
-                                  <td class="align-middle text-center">
-                                    <a class="btn btn-link text-success px-3 mb-0" href="javascript:;"><i class="fa fa-check-square text-success me-2" aria-hidden="true"></i>Checked</a>
-                                  </td>
-                              </tr>
-                          {% endfor %}
-                      {% endfor %}
-                  </tbody>                                  
-                </table>
-                </div>
-                
-                
-              </div>
-            </div>
-          </div>
-          <div class="card mt-4">
-            <div class="card-header pb-0 p-3">
-              <div class="row">
-                <div class="col-6 d-flex align-items-center">
-                  <h6 class="mb-0">Use a meter</h6>
-                </div>
-                <div class="col-6 text-end">
-                  <a class="btn bg-gradient-primary mb-0" href="javascript:;"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add New Meter</a>
-                </div>
-              </div>
-            </div>
 
-            <div class="card-body p-3">
-              <form role="form"></form>
-              <div class="row">
-                
-                <div class="col-md-6 mb-md-0 mb-4">
-                  <div class="card card-body border card-plain border-radius-lg d-flex align-items-center flex-row">
-                    <div class="mb-3">
-                     <input type="text" class="form-control" placeholder="meter code" aria-label="meter code">
-                    </div>
-                  </div>
+    <div class="row">
+
+      <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+
+        <div class="card">
+          <div class="card-body p-3">
+            <div class="row">
+              <div class="card-body position-relative z-index-1 d-flex flex-column h-50 p-3">
+                <a href="{{url_for('meters_monitoring')}}" class="btn bg-gradient-primary mb-0 d-flex flex-column align-items-center justify-content-center">
+              <div class="col-8">
+  
+                <div class="numbers">
+                  <h5 class="text-white mb-0 text-capitalize font-weight-bolder">Meters Monitoring</h5>
                 </div>
-                <div class="col-md-6">
-                  <div class="card card-body border card-plain border-radius-lg d-flex align-items-center flex-row">
-                    <div class="mb-3">
-                      <input type="text" class="form-control" placeholder="date" aria-label="date">
-                    </div>
-                  </div>
-                </div>
-               
               </div>
-             </form>
+              <div class="col-4 text-end">
+                
+                  <img src="{{ url_for('static', filename='img/meter_page3.png')}}" class="navbar-brand-img h-100" style="max-width: 100%; height: auto;">
+             
+              </div>
+              </a>
+             </div>
             </div>
           </div>
+        </div>
+
+      </div>
+      
+
+    <div class="col-xl-4 col-sm-6 mb-xl-0">
+      
+      <div class="card">
+        <div class="card-body p-3">
+          <div class="row">
+            <div class="card-body position-relative z-index-1 d-flex flex-column h-50 p-3">
+            <a href="{{url_for('injectors_monitoring')}}" class="btn bg-gradient-primary mb-0 d-flex flex-column align-items-center justify-content-center">
+            <div class="col-8">
+
+              <div class="numbers">
+                <h5 class="text-white mb-0 text-capitalize font-weight-bolder">Injectors Monitoring</h5>
+              </div>
+            </div>
+            <div class="col-4 text-end">
+              
+                <img src="{{ url_for('static', filename='img/injector_page.png')}}" class="navbar-brand-img h-100" style="max-width: 100%; height: auto;">
+           
+            </div>
+          </a>
+           </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col-xl-4 col-sm-6 mb-xl-0">
+      <div class="card">
+        <div class="card-body p-3">
+          <div class="row">
+            <div class="card-body position-relative z-index-1 d-flex flex-column h-50 p-3">
+            <a href="{{url_for('tanks_monitoring')}}" class="btn bg-gradient-primary mb-0 d-flex flex-column align-items-center justify-content-center">
+            <div class="col-8">
+
+              <div class="numbers">
+                <h5 class="text-white mb-0 text-capitalize font-weight-bolder">Tanks Monitoring</h5>
+              </div>
+            </div>
+            <div class="col-4 text-end">
+              
+                <img src="{{ url_for('static', filename='img/tanks_page.png')}}" class="navbar-brand-img h-100" style="max-width: 100%; height: auto;">
+           
+            </div>
+          </a>
+           </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+          <div class="row mt-4">
+
+            <div class="col-lg-6 mb-lg-0 mb-4">
+
+          <div class="card h-100">
+            <div class="card-header pb-0 p-3">
+                <div class="row">
+                    <div class="col-6 d-flex align-items-center">
+                        <h5 class="mb-0">Add a new meter</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-3 d-flex flex-column">
+                <form action="/add_meter" method="post" id="meter-form" role="form">
+                    <!-- Meter Code -->
+                    <div class="mb-3">
+                        <h6>Meter Code</h6>
+                        <input type="text" class="form-control" id="meter_code" name="meter_code" placeholder="Meter Code" aria-label="Meter Code">
+                    </div>
+                    <!-- Date -->
+                    <div class="mb-3">
+                        <h6>Date</h6>
+                        <input type="date" class="form-control" id="folio_number" name="folio_number" placeholder="Date" aria-label="Date">
+                    </div>
+                    <!-- Quantity Difference -->
+                    <div class="mb-3">
+                        <h6>Quantity Difference</h6>
+                        <input type="number" class="form-control" id="gross_unaccounted" name="gross_unaccounted" placeholder="Quantity Difference" aria-label="Quantity Difference">
+                    </div>
+                    <!-- Submit Button -->
+                    <button class="btn bg-gradient-primary mb-0" type="submit" value="submit">
+                        <i class="fas fa-plus"></i>&nbsp;&nbsp;Add New Meter
+                    </button>
+                </form>
+                {{ message_meter_add }}
+            </div>
+        </div>
+      </div>
+        
+
+      <div class="col-lg-6">
+        <div class="card h-100">
+          <div class="card-header pb-0 p-3">
+              <div class="row">
+                  <div class="col-6 d-flex align-items-center">
+                      <h5 class="mb-0">Add a new Injector</h5>
+                  </div>
+              </div>
+          </div>
+          <div class="card-body p-3 d-flex flex-column">
+              <form action="/add_injector" method="post" id="injector-form" role="form">
+                  <!-- Meter Code -->
+                  <div class="mb-3">
+                      <h6>Injector Code</h6>
+                      <input type="text" class="form-control" id="injector_code" name="injector_code" placeholder="Injector Code" aria-label="Injector Code">
+                  </div>
+                  <!-- Date -->
+                  <div class="mb-3">
+                      <h6>Date</h6>
+                      <input type="date" class="form-control" id="folio_number_inj" name="folio_number_inj" placeholder="Date" aria-label="Date">
+                  </div>
+                  <!-- Quantity Difference -->
+                  <div class="mb-3">
+                      <h6>Quantity Difference</h6>
+                      <input type="number" class="form-control" id="frac_unaccounted" name="frac_unaccounted" placeholder="Quantity Difference" aria-label="Quantity Difference">
+                  </div>
+                  <!-- Submit Button -->
+                  <button class="btn bg-gradient-primary mb-0" type="submit" value="submit">
+                      <i class="fas fa-plus"></i>&nbsp;&nbsp;Add New Injector
+                  </button>
+              </form>
+              {{ message_injector_add }}
+          </div>
+      </div>
+      </div>
+    </div>
          <br>
        
         
 
-          <div class="card mb-4">
-            <div class="card-header pb-0">
-              <h6>Injectors Monitoring</h6>
-            </div>
-            <div class="card-body px-0 pt-0 pb-2">
-              <div class="table-responsive p-0">
-                <div style="overflow-x: auto;">
-                  <table class="table align-items-center mb-0">
-                    <thead>
-                        <tr>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Injector Code</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Number of days in use</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">First Day in use</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Day in use</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Use Meter</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fix Meter</th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                      {% for cluster_label, inj_codes in inj_groups.items() %}
-                          {% for injector_code in inj_codes %}
-                              <tr>
-                                  <td>
-                                      <div class="d-flex px-2 py-1">
-                                          <div>
-                                              <img src="{{ url_for('static', filename='img/injector.png') }}" class="avatar avatar-equip me-3" alt="user6">
-                                          </div>
-                                          <div class="d-flex flex-column justify-content-center">
-                                              <!-- Display the meter code -->
-                                              <h6 class="mb-0 text-sm">{{ injector_code }}</h6>
-                                          </div>
-                                      </div>
-                                  </td>
-                                  <td class="align-middle text-center">
-                                    <!-- Display the days_since_last_non_zero -->
-                                    {% set inj_data_days = injector_result[injector_result['INJECTOR_CODE'] == injector_code] %}
-                                    {% set days_since_last_non_zero_inj = inj_data_days['last_date_non_zero'].values[0] %}
-                                    <p class="text-xs font-weight-bold mb-0">{{ days_since_last_non_zero_inj }}  Days</p>
-                                 </td>
-                                  <td class="align-middle text-center">
-                                      <!-- Retrieve and display the first and last date in use -->
-                                      {% set inj_data_single = injector_data[injector_data['INJECTOR_CODE'] == injector_code] %}
-                                      {% set first_date_in_use_inj = inj_data_single['FOLIO_NUMBER'].min() %}
-                                      {% set last_date_in_use_inj = inj_data_single['FOLIO_NUMBER'].max() %}
-                                      <p class="text-xs font-weight-bold mb-0">{{ first_date_in_use_inj|datetime }}</p>
-                                  </td>
-                                  <td class="align-middle text-center">
-                                    <!-- Retrieve and display the first and last date in use -->
-                                    <p class="text-xs font-weight-bold mb-0">{{ last_date_in_use_inj|datetime }}</p>
-                                </td>
-                                  <td class="align-middle text-center text-sm">
-                                      <!-- Display the status based on cluster label -->
-                                      {% if cluster_label == 'Cluster 0' %}
-                                          <p class="badge badge-sm bg-gradient-success">Healthy</p>
-                                      {% elif cluster_label == 'Cluster 1' %}
-                                          <p class="badge badge-sm bg-gradient-warning">Operational</p>
-                                      {% elif cluster_label == 'Cluster 2' %}
-                                          <p class="badge badge-sm bg-gradient-yellow">Requires inspection</p>
-                                      {% elif cluster_label == 'Cluster 3' %}
-                                          <p class="badge badge-sm bg-gradient-danger">Non-Operational</p>
-                                      {% endif %}
-                                  </td>
-                                  <td class="align-middle text-center">
-                                    <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;"><i class="fa fa-hand-paper-o text-dark me-2" aria-hidden="true"></i>Use</a>
-                                  </td>
-                                  <td class="align-middle text-center">
-                                    <a class="btn btn-link text-success px-3 mb-0" href="javascript:;"><i class="fa fa-check-square text-success me-2" aria-hidden="true"></i>Checked</a>
-                                  </td>
-                              </tr>
-                          {% endfor %}
-                      {% endfor %}
-                  </tbody>                                  
-                </table>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-12">
-          <div class="card mb-4">
-            <div class="card-header pb-0">
-              <h6>Projects table</h6>
-            </div>
-            <div class="card-body px-0 pt-0 pb-2">
-              <div class="table-responsive p-0">
-                <table class="table align-items-center justify-content-center mb-0">
-                  <thead>
-                    <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Project</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Budget</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center opacity-7 ps-2">Completion</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-spotify.svg" class="avatar avatar-sm rounded-circle me-2" alt="spotify">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Spotify</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">$2,500</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">working</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">60%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-info" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="align-middle">
-                        <button class="btn btn-link text-secondary mb-0">
-                          <i class="fa fa-ellipsis-v text-xs"></i>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-invision.svg" class="avatar avatar-sm rounded-circle me-2" alt="invision">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Invision</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">$5,000</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">done</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">100%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="align-middle">
-                        <button class="btn btn-link text-secondary mb-0" aria-haspopup="true" aria-expanded="false">
-                          <i class="fa fa-ellipsis-v text-xs"></i>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-jira.svg" class="avatar avatar-sm rounded-circle me-2" alt="jira">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Jira</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">$3,400</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">canceled</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">30%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-danger" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="30" style="width: 30%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="align-middle">
-                        <button class="btn btn-link text-secondary mb-0" aria-haspopup="true" aria-expanded="false">
-                          <i class="fa fa-ellipsis-v text-xs"></i>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-slack.svg" class="avatar avatar-sm rounded-circle me-2" alt="slack">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Slack</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">$1,000</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">canceled</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">0%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width: 0%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="align-middle">
-                        <button class="btn btn-link text-secondary mb-0" aria-haspopup="true" aria-expanded="false">
-                          <i class="fa fa-ellipsis-v text-xs"></i>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-webdev.svg" class="avatar avatar-sm rounded-circle me-2" alt="webdev">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Webdev</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">$14,000</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">working</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">80%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-info" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="80" style="width: 80%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="align-middle">
-                        <button class="btn btn-link text-secondary mb-0" aria-haspopup="true" aria-expanded="false">
-                          <i class="fa fa-ellipsis-v text-xs"></i>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-xd.svg" class="avatar avatar-sm rounded-circle me-2" alt="xd">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Adobe XD</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">$2,300</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">done</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">100%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="align-middle">
-                        <button class="btn btn-link text-secondary mb-0" aria-haspopup="true" aria-expanded="false">
-                          <i class="fa fa-ellipsis-v text-xs"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       <footer class="footer pt-3  ">
         <div class="container-fluid">
           <div class="row align-items-center justify-content-lg-between">
             <div class="col-lg-6 mb-lg-0 mb-4">
-              <div class="copyright text-center text-sm text-muted text-lg-start">
-                © <script>
-                  document.write(new Date().getFullYear())
-                </script>,
-                made with <i class="fa fa-heart"></i> by
-                <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
-                for a better web.
-              </div>
+              
             </div>
-            <div class="col-lg-6">
-              <ul class="nav nav-footer justify-content-center justify-content-lg-end">
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
-                </li>
-              </ul>
-            </div>
+            
           </div>
         </div>
       </footer>

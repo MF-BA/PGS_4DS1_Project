@@ -4,6 +4,8 @@ from equipement import cluster_injector_data
 from orders import orders_prediction
 
 
+from flask import Flask, render_template, url_for, request, redirect,session,flash
+from equipement import cluster_injector_data,cluster_tanks_data,cluster_meter_data
 from pymongo import MongoClient
 from datetime import datetime
 import pandas as pd
@@ -17,9 +19,11 @@ import geopandas as gpd
 import math
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 import matplotlib.pyplot as plt
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-
+app.secret_key = 'fuel_vision_Project_PGS'
+app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["MONGO_URI"] = "mongodb://localhost:27017/PGS"
 mongo = PyMongo(app).db
 client = MongoClient('mongodb://localhost:27017/')
@@ -30,14 +34,63 @@ delivery_collection = db['Delivery']
 delivery_detailed_collection = db['Delivery_detailed']
 destination_collection = db['Destinations']
 Orders = db['Orders']
+tanks_leaks_collection = db['Leaks_Thefts']
+users=db['Users']
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        user = users.find_one({'email': request.form['email']})
+
+        if user and check_password_hash(user['password'], request.form['password']):
+            # Authentication success
+            session['user_id'] = str(user['_id'])
+            session['user_name'] = user['last_name']
+            return redirect(url_for('dashboard'))
+        else:
+            # Authentication fails
+            flash('Invalid username or password', 'danger')
+            return redirect(url_for('index'))
+
     return render_template('sign-in.html')
+
+@app.route('/sign_up', methods=['GET', 'POST'])
+def sign_up():
+    if request.method == 'POST':
+        #Users=users.find()
+        existing_user = users.find_one({'email': request.form['email']})
+
+        if existing_user is None:
+            # Here we use the default method, which is 'pbkdf2:sha256'
+            hashed_password = generate_password_hash(request.form['password'])
+            users.insert_one({
+                'first_name': request.form['first_name'],
+                'last_name': request.form['last_name'],
+                'email': request.form['email'],
+                'password': hashed_password
+            })
+            return redirect(url_for('index'))  # Make sure this is the intended redirect
+        else:
+            flash('That email already exists!','danger')  # Use a category 'error' for styling if desired
+            return redirect(url_for('sign_up'))  # Redirect back to the sign-up page
+
+    return render_template('sign-up.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)  # Remove user_id from session
+    return redirect(url_for('index'))
 
 @app.route('/dashboard')
 def dashboard():
-   return render_template('Dashboard.html')
+    if 'user_id' not in session:
+        # Flash a message that you'll use in the login page
+        flash('You must be logged in to view the dashboard.','danger')
+        # Redirect to login page if the user is not logged in
+        return redirect(url_for('index', next=request.url))
+    return render_template('Dashboard.html')
+
+
 
 @app.route('/inventory_management')
 def inventory_management():
@@ -49,8 +102,8 @@ def format_datetime(value, format='%d/%m/%Y'):
     """Format a datetime object."""
     return pd.to_datetime(value, format='%Y%m%d').strftime(format)
 
-@app.route('/equipement_monitoring')
-def equipement_monitoring():
+@app.route('/meters_monitoring')
+def meters_monitoring():
    meter_data = pd.DataFrame(list(meter_collection.find()))
    result_df = cluster_meter_data(meter_data)
    meter_groups = {}
@@ -59,6 +112,11 @@ def equipement_monitoring():
       meter_codes = cluster_data['METER_CODE'].tolist()
       meter_groups[f'Cluster {cluster_label}'] = meter_codes
 
+   return render_template('Meters_monitoring.html',meter_groups=meter_groups,meter_result = result_df,meter_data = meter_data)
+
+
+@app.route('/injectors_monitoring')
+def injectors_monitoring():
    injector_data = pd.DataFrame(list(injector_collection.find()))
    print(injector_data.any)
    result_df_inj = cluster_injector_data(injector_data)
@@ -67,8 +125,92 @@ def equipement_monitoring():
       cluster_data2 = result_df_inj[result_df_inj['cluster'] == cluster_label2]
       inj_codes = cluster_data2['INJECTOR_CODE'].tolist()
       inj_groups[f'Cluster {cluster_label2}'] = inj_codes
-   
-   return render_template('Equipement_monitoring.html',meter_groups=meter_groups,meter_result = result_df,meter_data = meter_data,inj_groups=inj_groups,injector_result = result_df_inj,injector_data = injector_data)
+
+   return render_template('Injectors_monitoring.html',inj_groups=inj_groups,injector_result = result_df_inj,injector_data = injector_data,)
+
+@app.route('/tanks_monitoring')
+def tanks_monitoring():
+   tanks_data = pd.DataFrame(list(tanks_leaks_collection.find()))
+   print(tanks_data.any)
+   result_df_tk_leaks = cluster_tanks_data(tanks_data)
+   tk_leaks_groups = {}
+   for cluster_label2 in range(5):
+      cluster_data2 = result_df_tk_leaks[result_df_tk_leaks['cluster'] == cluster_label2]
+      tk_codes = cluster_data2['TANK_CODE'].tolist()
+      tk_leaks_groups[f'Cluster {cluster_label2}'] = tk_codes
+
+   return render_template('Tanks_monitoring.html',tanks_groups=tk_leaks_groups,result_tanks=result_df_tk_leaks,leaks_data = tanks_data)
+
+
+@app.route('/equipement_monitoring')
+def equipement_monitoring():
+
+   return render_template('Equipement_monitoring.html')
+
+@app.route('/add_meter', methods=['POST'])
+def add_meter():
+    meter_code = request.form['meter_code']
+    folio_number = request.form['folio_number']
+    gross_unaccounted = request.form['gross_unaccounted']
+    
+
+    # Parse the original date string
+    original_date = datetime.strptime(folio_number, "%Y-%m-%d")
+
+    # Format the date as "01/01/2024"
+    formatted_date_str = original_date.strftime("%m/%d/%Y")
+    
+    # Create a dictionary representing the meter data
+    meter_data = {
+        'METER_CODE': meter_code,
+        'FOLIO_NUMBER': formatted_date_str,  # Use the formatted date
+        'GROSS_UNACCOUNTED': int(gross_unaccounted)
+    }
+    
+    try:
+        # Insert the meter data into the MongoDB collection
+        meter_collection.insert_one(meter_data)
+        
+        message = 'Meter added successfully!'
+        #flash('Meter added successfully!', 'success')
+    except Exception as e:
+        message = 'error meter not added'
+        #flash(f'Error: {str(e)}', 'danger')
+
+    return redirect(url_for('equipement_monitoring', message_meter_add=message))
+    
+@app.route('/add_injector', methods=['POST'])
+def add_injector():
+    injector_code = request.form['injector_code']
+    folio_number = request.form['folio_number_inj']
+    frac_unaccounted = request.form['frac_unaccounted']
+    
+
+    # Parse the original date string
+    original_date = datetime.strptime(folio_number, "%Y-%m-%d")
+
+    # Format the date as "01/01/2024"
+    formatted_date_str = original_date.strftime("%m/%d/%Y")
+    
+    # Create a dictionary representing the meter data
+    injector_data = {
+        'INJECTOR_CODE': injector_code,
+        'FOLIO_NUMBER': formatted_date_str,  # Use the formatted date
+        'FRAC_UNACCOUNTED': int(frac_unaccounted)
+    }
+    
+    try:
+        # Insert the meter data into the MongoDB collection
+        injector_collection.insert_one(injector_data)
+        
+        message = 'Injector added successfully!'
+        #flash('Meter added successfully!', 'success')
+    except Exception as e:
+        message = 'error injector not added'
+        #flash(f'Error: {str(e)}', 'danger')
+
+    return redirect(url_for('equipement_monitoring', message_injector_add=message))
+
 
 @app.route('/delivery_management/<int:delivery_id>')
 def delivery_display(delivery_id):
@@ -179,5 +321,8 @@ def orders_management():
 
     return render_template('Orders_management.html', orders_data=orders_data, datetime=datetime,customer_numbers=customer_numbers)
 
+
+
 if __name__ == "__main__":
+    '''app.run(debug=True)'''
     app.run(host="0.0.0.0")
