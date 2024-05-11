@@ -215,10 +215,13 @@ def cluster_injector_data(merged_injector_data):
 
 def cluster_tanks_data(tanks_data):
 
-    test_merged_leaks_thefts = tanks_data[['TANK_CODE','FOLIO_NUMBER','NET_QUANTITY','RACK_DISPOSALS','quantity_difference']]
+    test_merged_leaks_thefts = tanks_data[['TANK_CODE','FOLIO_NUMBER','quantity_difference']]
 
-    test_merged_leaks_thefts['FOLIO_NUMBER'] = pd.to_datetime(test_merged_leaks_thefts['FOLIO_NUMBER'])
-    test_merged_leaks_thefts['quantity_difference'] = test_merged_leaks_thefts['quantity_difference'].astype(int)
+    test_merged_leaks_thefts.loc[:,'FOLIO_NUMBER'] = pd.to_datetime(test_merged_leaks_thefts['FOLIO_NUMBER'])
+    test_merged_leaks_thefts.loc[:,'quantity_difference'] = test_merged_leaks_thefts['quantity_difference'].astype(int)
+
+    test_merged_leaks_thefts = test_merged_leaks_thefts.sort_values(by ='TANK_CODE')
+    test_merged_leaks_thefts.reset_index(inplace=True)
 
     grouped_leaks_thefts = test_merged_leaks_thefts.groupby('TANK_CODE')
 
@@ -229,29 +232,16 @@ def cluster_tanks_data(tanks_data):
    # Iterate over groups
     for tank_code, group_data in grouped_leaks_thefts:
         if (group_data['quantity_difference'] < -20).any():
-            # Find the row with the maximum FOLIO_NUMBER where quantity_difference indicates a leak or theft
-            max_folio_row = group_data[group_data['quantity_difference'] < -20]['FOLIO_NUMBER'].idxmax()
-        
-            if pd.notnull(max_folio_row) and max_folio_row in group_data.index:
-               # Calculate days since last non-zero value
-               timestamp_str = str(group_data.loc[max_folio_row, 'FOLIO_NUMBER'])
-
-               timestamp = timestamp_str[-8:]
-
-               year = timestamp[:4]
-               month = timestamp[4:6]
-               day = timestamp[6:]
- 
-               formatted_date_str = f"{year}-{month}-{day}"
-
-
-               last_less_minus20_date = datetime.strptime(formatted_date_str, "%Y-%m-%d")
-               days_since_last_less_minus20 = (datetime.now() - last_less_minus20_date).days
+           
+            filtered_group_data = group_data[(group_data['quantity_difference'] < -20)]
+            if not filtered_group_data.empty:
+               max_folio_row_tank = filtered_group_data['FOLIO_NUMBER'].idxmax()
+               days_since_last_less_minus20 = (datetime.now() - group_data.loc[max_folio_row_tank, 'FOLIO_NUMBER']).days
 
                # Calculate successive non-zero count
                successive_non_zero_count = 1
-               successive_less_minus20_sum = abs(group_data.loc[max_folio_row, 'quantity_difference'])
-               for idx in range(max_folio_row - 1, -1, -1):
+               successive_less_minus20_sum = abs(group_data.loc[max_folio_row_tank, 'quantity_difference'])
+               for idx in range(max_folio_row_tank - 1, -1, -1):
                    if idx in group_data.index and group_data.loc[idx, 'quantity_difference'] < -20:
                        successive_non_zero_count += 1
                        successive_less_minus20_sum += abs(group_data.loc[idx, 'quantity_difference'])
@@ -265,7 +255,7 @@ def cluster_tanks_data(tanks_data):
                 'successive_less_minus20': successive_non_zero_count,
                 'successive_less_minus20_abs_sum': successive_less_minus20_sum,
                 'last_date_less_minus20': days_since_last_less_minus20,
-                'max_folio_date': last_less_minus20_date.date(),
+                'max_folio_date': days_since_last_less_minus20,
                 'repaired': repaired
                 })
                current_indices = set(group_data.index)
