@@ -10,6 +10,12 @@
         padding: 0;
         font-family: sans-serif;
       }
+      
+      .my-custom-table td {
+          /* Apply styles to table cells */
+          text-align: center !important;
+          vertical-align: middle!important;
+      }
       .chartMenu {
         width: 100vw;
         height: 40px;
@@ -475,7 +481,7 @@
                 <div class="col-sm-10 col-xl-3" style="margin-top: 20px; padding-left: 23px;">
                     <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
                         <div class="ms-3">
-                            <h6 class="mb-0">Gauge</h6>
+                            <h6 class="mb-0">Gauge in Liters</h6>
                             <div id="gauge_div" style="width: 800px; height: 320px; padding-left: 10px; margin-top: 20px;"></div>
                         </div>
                     </div>
@@ -513,7 +519,6 @@
                                     <th scope="col">Tank Code</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Shell Capacity</th>
-                                    <th scope="col">Terminal Product Number</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -521,11 +526,10 @@
                               {% for index, row in tanks_inf.iterrows() %}
                               {% if row['TANK_CODE'] not in ['TK-100', 'TK-200', 'TK-300', 'TK-400','TK-500', 'TK-600'] %}
                                   <tr>
-                                      <td>{{ row['TANK_CODE'] }}</td>
-                                      <td>{{ row['NAME'] }}</td>
-                                      <td>{{ row['SHELL_CAPACITY'] }} L</td>
-                                      <td>{{ row['TERMINAL_PRODUCT_NUMBER'] }}</td>
-                                      <td><a class="btn btn-sm btn-primary" href="{{ url_for('tank', tank_code=row['TANK_CODE']) }}">Detail</a></td>
+                                      <td class="align-middle text-center text-sm">{{ row['TANK_CODE'] }}</td>
+                                      <td class="align-middle text-center text-sm">{{ row['NAME'] }}</td>
+                                      <td class="align-middle text-center text-sm">{{ row['SHELL_CAPACITY'] }} L</td>
+                                      <td class="align-middle text-center text-sm" ><a class="btn btn-sm btn-primary" href="{{ url_for('tank', tank_code=row['TANK_CODE']) }}">Detail</a></td>
                                   </tr>
                               {% endif %}
                           {% endfor %}
@@ -542,7 +546,7 @@
                 <div class="row g-4">
                   <div class="col-sm-12 col-xl-7">
                     <div class="bg-secondary rounded h-100 p-4">
-                        <h6 class="mb-4">Additive</h6>
+                        <h6 class="mb-4">Additive in Liters</h6>
 
                             <canvas id="myChart"></canvas>
 
@@ -725,20 +729,24 @@
 
 
             <!-- Footer Start -->
-            <div class="container-fluid pt-4 px-4">
-                <div class="bg-secondary rounded-top p-4">
-                    <div class="row">
-                        <div class="col-12 col-sm-6 text-center text-sm-start">
-                            &copy; <a href="#">Your Site Name</a>, All Right Reserved. 
-                        </div>
-                        <div class="col-12 col-sm-6 text-center text-sm-end">
-                            <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                            Designed By <a href="https://htmlcodex.com">HTML Codex</a>
-                            <br>Distributed By: <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
-                        </div>
+            <footer class="footer pt-3  ">
+              <br>
+              <div class="container-fluid">
+                <div class="row align-items-center justify-content-lg-between">
+                  <div class="col-lg-6 mb-lg-0 mb-4">
+                    <div class="copyright text-center text-sm text-muted text-lg-start">
+                      © <script>
+                        document.write(new Date().getFullYear())
+                      </script>,
+                      by
+                      <a class="font-weight-bold" target="_blank">Fuel Vision Group</a>
                     </div>
+                  </div>
                 </div>
-            </div>
+              </div>
+              <br>
+
+            </footer>
             <!-- Footer End -->
         </div>
         <!-- Content End -->

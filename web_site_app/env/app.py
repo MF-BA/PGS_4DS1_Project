@@ -192,7 +192,7 @@ def tank(tank_code):
     print(decomposed_days_with_best_condition)
 
     # Generate HTML table with centered values
-    table_html = sorted_tank_inf.to_html(classes='table table-striped', index=False, justify='center')
+    table_html = sorted_tank_inf.to_html(classes='table table-striped my-custom-table', index=False, justify='center')
     ##################################################################################
     selected_tank_inf_100 = tanks_data[tanks_data['TANK_CODE'] == 'TK-100']
     selected_tank_inf_100 = selected_tank_inf_100.drop(columns=['_id'])
