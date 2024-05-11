@@ -68,6 +68,14 @@ def get_injector_codes():
     # Return the list of unique meter codes as JSON
     return jsonify(unique_injector_codes)
 
+@app.route('/get_tanks_codes', methods=['GET'])
+def get_tanks_codes():
+    # Retrieve unique meter codes from MongoDB
+    unique_tank_codes = tanks_leaks_collection.distinct("TANK_CODE")
+
+    # Return the list of unique meter codes as JSON
+    return jsonify(unique_tank_codes)
+
 @app.route('/inventory_management')
 def inventory_management():
    return render_template('Inventory_management.html')
@@ -411,6 +419,8 @@ def meter_record():
 
     return redirect(url_for('meters_monitoring'))
 
+
+
 @app.route('/injector_record', methods=['POST'])
 def injector_record():
     try:
@@ -444,6 +454,40 @@ def injector_record():
 
     return redirect(url_for('injectors_monitoring'))
 
+@app.route('/tank_record', methods=['POST'])
+def tank_record():
+    try:
+        tank_code = request.form['tank_code']
+        quantity_difference = request.form['quantity_difference']
+        
+        # Check if any of the fields are empty
+        if not tank_code or not quantity_difference:
+            flash('Please fill all the fields.', 'danger')
+            return redirect(url_for('tanks_monitoring'))
+        
+        # Get the current date
+        current_date = datetime.now()
+        
+        # Format the date as "01/01/2024"
+        formatted_date_str = current_date.strftime("%m/%d/%Y")
+        
+        # Create a dictionary representing the meter data
+        tank_data = {
+            
+            'FOLIO_NUMBER': formatted_date_str,  # Use the current date
+            'TANK_CODE': tank_code,
+            'quantity_difference': int(quantity_difference)
+        }
+        
+        # Insert the meter data into the MongoDB collection
+        tanks_leaks_collection.insert_one(tank_data)
+        
+        flash('Tank record added successfully!', 'success')
+    except Exception as e:
+        flash('Error: Tank not added.', 'danger')
+
+    return redirect(url_for('tanks_monitoring'))
+
 @app.route('/add_meter', methods=['POST'])
 def add_meter():
     try:
@@ -474,6 +518,39 @@ def add_meter():
         flash('Meter added successfully!', 'success')
     except Exception as e:
         flash('Error: Meter not added.', 'danger')
+
+    return redirect(url_for('equipement_monitoring'))
+
+@app.route('/add_tank', methods=['POST'])
+def add_tank():
+    try:
+        tank_code = request.form['tank_code']
+        quantity_difference = request.form['quantity_difference']
+        
+        # Check if any of the fields are empty
+        if not tank_code or not quantity_difference:
+            flash('Please fill all the fields.', 'danger')
+            return redirect(url_for('equipement_monitoring'))
+        
+        # Get the current date
+        current_date = datetime.now()
+        
+        # Format the date as "01/01/2024"
+        formatted_date_str = current_date.strftime("%m/%d/%Y")
+        
+        # Create a dictionary representing the meter data
+        tank_data = {
+            'FOLIO_NUMBER': formatted_date_str,  # Use the current date
+            'TANK_CODE': tank_code,
+            'quantity_difference': int(quantity_difference)
+        }
+        
+        # Insert the meter data into the MongoDB collection
+        tanks_leaks_collection.insert_one(tank_data)
+        
+        flash('Tank record added successfully!', 'success')
+    except Exception as e:
+        flash('Error: Tank not added.', 'danger')
 
     return redirect(url_for('equipement_monitoring'))
     
