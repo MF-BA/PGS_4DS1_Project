@@ -1043,7 +1043,7 @@ def scrape_weather_data():
 
 
     # Create 'bestcondition' based on certain conditions of 'Weather' and 'Wind':
-    df['bestcondition'] = ((df['Weather'] < 23) & (df['Wind'] < 20)).astype(int)
+    df['bestcondition'] = ((df['Weather'] < 25) & (df['Wind'] < 20)).astype(int)
 
     # Apply PCA and KMeans clustering to help in determining the clusters
     scaler = StandardScaler()
