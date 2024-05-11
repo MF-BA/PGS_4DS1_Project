@@ -1,9 +1,7 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for
 from equipement import cluster_meter_data
 from equipement import cluster_injector_data
 from orders import orders_prediction
-
-
 from flask import Flask, render_template, url_for, request, redirect,session,flash
 from equipement import cluster_injector_data,cluster_tanks_data,cluster_meter_data
 from pymongo import MongoClient
@@ -113,9 +111,6 @@ def get_injector_codes():
 def inventory_management():
    return render_template('Inventory_management.html')
 
-@app.route('/orders_management')
-def orders_management():
-   return render_template('Orders_management.html')
 
 @app.template_filter('datetime')
 def format_datetime(value, format='%d/%m/%Y'):

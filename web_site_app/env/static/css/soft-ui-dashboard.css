@@ -23017,12 +23017,6 @@ hr.horizontal.gray-light {
   float: none;
 }
 
-/* Add this new style */
-.timeline-content.no-line:after {
-  display: none;
-}
-
-
 .tilt {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
@@ -24612,19 +24606,6 @@ span.flatpickr-weekday {
   -webkit-transform: translate(50%, 50%);
   transform: translate(50%, 50%);
 }
-
-.map-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%; /* Ensure the container takes the full height of the parent */
-}
-
-.map {
-  width: 100%;
-  height: 400px; /* Set the desired height for the map */
-}
-
 
 .noUi-marker-horizontal.noUi-marker {
   margin-left: -1px;
