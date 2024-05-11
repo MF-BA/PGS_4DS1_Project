@@ -191,20 +191,96 @@ def tank(tank_code):
     decomposed_days_with_best_condition = [decompose_date(date) for date in days_with_best_condition]
     print(decomposed_days_with_best_condition)
 
-    table_html = sorted_tank_inf.to_html(classes='table table-striped', index=False)
+    # Generate HTML table with centered values
+    table_html = sorted_tank_inf.to_html(classes='table table-striped', index=False, justify='center')
+    ##################################################################################
+    selected_tank_inf_100 = tanks_data[tanks_data['TANK_CODE'] == 'TK-100']
+    selected_tank_inf_100 = selected_tank_inf_100.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_100 = selected_tank_inf_100.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_100 = sorted_tank_inf_100.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_100 = sorted_tank_inf_100.iloc[0]
+    last_date_100 = last_date_row_100['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_100 = last_date_row_100['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    selected_tank_inf_200 = tanks_data[tanks_data['TANK_CODE'] == 'TK-200']
+    selected_tank_inf_200 = selected_tank_inf_200.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_200 = selected_tank_inf_200.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_200 = sorted_tank_inf_200.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_200 = sorted_tank_inf_200.iloc[0]
+    last_date_200 = last_date_row_200['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_200 = last_date_row_200['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    selected_tank_inf_300 = tanks_data[tanks_data['TANK_CODE'] == 'TK-300']
+    selected_tank_inf_300 = selected_tank_inf_300.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_300 = selected_tank_inf_300.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_300 = sorted_tank_inf_300.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_300 = sorted_tank_inf_300.iloc[0]
+    last_date_300 = last_date_row_300['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_300 = last_date_row_300['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    selected_tank_inf_400 = tanks_data[tanks_data['TANK_CODE'] == 'TK-400']
+    selected_tank_inf_400 = selected_tank_inf_400.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_400 = selected_tank_inf_400.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_400 = sorted_tank_inf_400.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_400 = sorted_tank_inf_400.iloc[0]
+    last_date_400 = last_date_row_400['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_400 = last_date_row_400['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    selected_tank_inf_500 = tanks_data[tanks_data['TANK_CODE'] == 'TK-500']
+    selected_tank_inf_500 = selected_tank_inf_500.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_500 = selected_tank_inf_500.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_500 = sorted_tank_inf_500.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_500 = sorted_tank_inf_500.iloc[0]
+    last_date_500 = last_date_row_500['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_500 = last_date_row_500['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    selected_tank_inf_600 = tanks_data[tanks_data['TANK_CODE'] == 'TK-600']
+    selected_tank_inf_600 = selected_tank_inf_600.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_600 = selected_tank_inf_600.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_600 = sorted_tank_inf_600.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_600 = sorted_tank_inf_600.iloc[0]
+    last_date_600 = last_date_row_600['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_600 = last_date_row_600['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+
+
+
 
 
     # Pass the decomposed dates to the template
     return render_template('tanktest.html', tanks_inf=tanks_inf, tanknb=tanknb, shell_capacity=tank_shell_capacity,
                             product_name=terminal_product_number, tank_name=tank_name, last_date=last_date,
                             last_closing_physical=last_closing_physical, decomposed_days_with_best_condition=decomposed_days_with_best_condition,
-                            tank_names=tank_names,table_html=table_html)
+                            tank_names=tank_names,table_html=table_html,last_closing_physical_100=last_closing_physical_100,last_closing_physical_200=last_closing_physical_200,last_closing_physical_300=last_closing_physical_300,
+                            last_closing_physical_400=last_closing_physical_400,last_closing_physical_500=last_closing_physical_500,last_closing_physical_600=last_closing_physical_600)
 
     #print(days_with_best_condition)
 
     #return render_template('tanktest.html', tanks_inf=tanks_inf, tanknb=tanknb, shell_capacity=tank_shell_capacity,product_name=terminal_product_number,tank_name=tank_name,last_date=last_date,last_closing_physical=last_closing_physical,days_with_best_condition=days_with_best_condition,tank_names=tank_names)
-
-
 
 
 @app.route('/all_tanks')
@@ -251,8 +327,85 @@ def all_tanks():
     # Decompose each date and pass the decomposed values to the template
     decomposed_days_with_best_condition = [decompose_date(date) for date in days_with_best_condition]
     print(decomposed_days_with_best_condition)
+    ##################################################################################
+    selected_tank_inf_100 = tanks_data[tanks_data['TANK_CODE'] == 'TK-100']
+    selected_tank_inf_100 = selected_tank_inf_100.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_100 = selected_tank_inf_100.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_100 = sorted_tank_inf_100.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_100 = sorted_tank_inf_100.iloc[0]
+    last_date_100 = last_date_row_100['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_100 = last_date_row_100['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    selected_tank_inf_200 = tanks_data[tanks_data['TANK_CODE'] == 'TK-200']
+    selected_tank_inf_200 = selected_tank_inf_200.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_200 = selected_tank_inf_200.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_200 = sorted_tank_inf_200.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_200 = sorted_tank_inf_200.iloc[0]
+    last_date_200 = last_date_row_200['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_200 = last_date_row_200['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    selected_tank_inf_300 = tanks_data[tanks_data['TANK_CODE'] == 'TK-300']
+    selected_tank_inf_300 = selected_tank_inf_300.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_300 = selected_tank_inf_300.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_300 = sorted_tank_inf_300.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_300 = sorted_tank_inf_300.iloc[0]
+    last_date_300 = last_date_row_300['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_300 = last_date_row_300['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    selected_tank_inf_400 = tanks_data[tanks_data['TANK_CODE'] == 'TK-400']
+    selected_tank_inf_400 = selected_tank_inf_400.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_400 = selected_tank_inf_400.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_400 = sorted_tank_inf_400.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_400 = sorted_tank_inf_400.iloc[0]
+    last_date_400 = last_date_row_400['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_400 = last_date_row_400['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    selected_tank_inf_500 = tanks_data[tanks_data['TANK_CODE'] == 'TK-500']
+    selected_tank_inf_500 = selected_tank_inf_500.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_500 = selected_tank_inf_500.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_500 = sorted_tank_inf_500.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_500 = sorted_tank_inf_500.iloc[0]
+    last_date_500 = last_date_row_500['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_500 = last_date_row_500['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    selected_tank_inf_600 = tanks_data[tanks_data['TANK_CODE'] == 'TK-600']
+    selected_tank_inf_600 = selected_tank_inf_600.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_600 = selected_tank_inf_600.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_600 = sorted_tank_inf_600.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_600 = sorted_tank_inf_600.iloc[0]
+    last_date_600 = last_date_row_600['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_600 = last_date_row_600['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
 
-    return render_template('All_tanks.html', tanks_inf=tanks_inf,tank_names=tank_names,decomposed_days_with_best_condition=decomposed_days_with_best_condition,tank_name=tank_name)
+
+
+
+    return render_template('All_tanks.html', tanks_inf=tanks_inf,tank_names=tank_names,decomposed_days_with_best_condition=decomposed_days_with_best_condition,tank_name=tank_name,last_closing_physical_100=last_closing_physical_100,last_closing_physical_200=last_closing_physical_200,last_closing_physical_300=last_closing_physical_300,
+                            last_closing_physical_400=last_closing_physical_400,last_closing_physical_500=last_closing_physical_500,last_closing_physical_600=last_closing_physical_600)
 
 
 @app.template_filter('datetime')
