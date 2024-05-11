@@ -471,7 +471,7 @@
 
               <div class="chart-container">
                 <canvas id="pie-chart" style="height: 300%;"></canvas> <!-- Set height to 100% -->
-            </div>
+              </div>
             </div>
           </div>
         </div>
@@ -664,144 +664,143 @@
             </div>
           </div>
         </div>
-        
+
 
       </div>
 
-<br>
-
-          
-
-            
-
-              <div class="card p-3">
-                <div class="card-header pb-0 p-3">
-                  <div class="row">
-                    <div class="col-6 d-flex align-items-center">
-                      <h5 class="mb-0">Add a new record</h5>
-                    </div>
-                  </div>
-                </div>
-                <div class="card-body p-3 d-flex flex-column">
-                  <form action="/meter_record" method="post" id="meter-form" role="form">
-                    <!-- Meter Code -->
-                    <div class="mb-3">
-                      <label for="meter_code" class="form-label">Meter Code</label>
-                      <select class="form-select" id="meter_code" name="meter_code" aria-label="Meter Code">
-                        <option value="" selected disabled>Select Meter Code</option>
-                        <!-- Meter codes will be dynamically populated here -->
-                      </select>
-                    </div>
-
-              
-                    <!-- Quantity Difference -->
-                    <div class="mb-3">
-                      <h6>Quantity Difference</h6>
-                      <input type="number" class="form-control" id="gross_unaccounted" name="gross_unaccounted"
-                        placeholder="Quantity Difference" aria-label="Quantity Difference">
-                    </div>
-                    <!-- Submit Button -->
-                    <button class="btn bg-gradient-primary mb-0" type="submit" value="submit">
-                      <i class="fas fa-plus"></i>&nbsp;&nbsp;Add New Record
-                    </button>
-                  </form>
-                  <br>
-                  {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-      <div class="alert alert-{{ category }} custom-alert">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
-<style>
-  .custom-alert {
-  color: white;
-  font-weight: bold;
-  /* Add any other custom styles as needed */
-}
-
-</style>
-                </div>
-              </div>
-            
+      <br>
 
 
-          <script>
-            function fetchAndRenderPieChart() {
-              $.ajax({
-                url: '/get_meter_counts', // Endpoint to fetch meter counts (same as defined in Flask route)
-                type: 'GET',
-                success: function (data) {
-                  renderPieChart(data); // Render pie chart with fetched meter counts
-                },
-                error: function (xhr, status, error) {
-                  console.error('Error fetching meter counts:', error);
-                }
-              });
-            }
-
-            /// Function to render the pie chart with meter counts data
-            function renderPieChart(meterCounts) {
-              var labels = Object.keys(meterCounts); // Extract labels (class names) from meter counts
-              var data = Object.values(meterCounts); // Extract data (meter counts) from meter counts
-              var backgroundColors = ['#dc3545', '#ffc107', '#28a745']; // Background colors for each class
-
-              var ctx = document.getElementById('pie-chart').getContext('2d');
-              var pieChart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                  labels: labels,
-                  datasets: [{
-                    data: data,
-                    backgroundColor: backgroundColors
-                  }]
-                },
-                options: {
-                  responsive: true, // Make the chart responsive (resize based on container)
-                  maintainAspectRatio: false, // Allow the chart to resize freely
-                  legend: {
-                    display: true, // Display legend
-                    labels: {
-                      fontColor: '#333', // Set legend label font color
-                      fontSize: 12, // Set legend label font size
-                      fontFamily: 'Arial, sans-serif', // Set legend label font family
-                      fontWeight: 'bold' // Make legend label font bold
-                    }
-                  },
-                  title: {
-                    display: true, // Display title
-                    text: 'Meter Counts', // Set title text
-                    fontSize: 16, // Set title font size
-                    fontColor: '#333', // Set title font color
-                    fontFamily: 'Arial, sans-serif', // Set title font family
-                    fontWeight: 'bold' // Make title font bold
-                  }
-                }
-              });
-            }
 
 
-            // Call fetchAndRenderPieChart function to fetch data and render the pie chart on page load
-            $(document).ready(function () {
-              fetchAndRenderPieChart();
-            });
 
-          </script>
-
-
-          <footer class="footer pt-3  ">
-            <div class="container-fluid">
-              <div class="row align-items-center justify-content-lg-between">
-                <div class="col-lg-6 mb-lg-0 mb-4">
-
-                </div>
-
-              </div>
+      <div class="card p-3">
+        <div class="card-header pb-0 p-3">
+          <div class="row">
+            <div class="col-6 d-flex align-items-center">
+              <h5 class="mb-0">Add a new record</h5>
             </div>
-          </footer>
-        
+          </div>
+        </div>
+        <div class="card-body p-3 d-flex flex-column">
+          <form action="/meter_record" method="post" id="meter-form" role="form">
+            <!-- Meter Code -->
+            <div class="mb-3">
+              <label for="meter_code" class="form-label">Meter Code</label>
+              <select class="form-select" id="meter_code" name="meter_code" aria-label="Meter Code">
+                <option value="" selected disabled>Select Meter Code</option>
+                <!-- Meter codes will be dynamically populated here -->
+              </select>
+            </div>
+
+
+            <!-- Quantity Difference -->
+            <div class="mb-3">
+              <h6>Quantity Difference</h6>
+              <input type="number" class="form-control" id="gross_unaccounted" name="gross_unaccounted"
+                placeholder="Quantity Difference" aria-label="Quantity Difference">
+            </div>
+            <!-- Submit Button -->
+            <button class="btn bg-gradient-primary mb-0" type="submit" value="submit">
+              <i class="fas fa-plus"></i>&nbsp;&nbsp;Add New Record
+            </button>
+          </form>
+          <br>
+          {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          {% for category, message in messages %}
+          <div class="alert alert-{{ category }} custom-alert">
+            {{ message }}
+          </div>
+          {% endfor %}
+          {% endif %}
+          {% endwith %}
+          <style>
+            .custom-alert {
+              color: white;
+              font-weight: bold;
+              /* Add any other custom styles as needed */
+            }
+          </style>
+        </div>
+      </div>
+
+
+
+      <script>
+        function fetchAndRenderPieChart() {
+          $.ajax({
+            url: '/get_meter_counts', // Endpoint to fetch meter counts (same as defined in Flask route)
+            type: 'GET',
+            success: function (data) {
+              renderPieChart(data); // Render pie chart with fetched meter counts
+            },
+            error: function (xhr, status, error) {
+              console.error('Error fetching meter counts:', error);
+            }
+          });
+        }
+
+        /// Function to render the pie chart with meter counts data
+        function renderPieChart(meterCounts) {
+          var labels = Object.keys(meterCounts); // Extract labels (class names) from meter counts
+          var data = Object.values(meterCounts); // Extract data (meter counts) from meter counts
+          var backgroundColors = ['#dc3545', '#ffc107', '#28a745']; // Background colors for each class
+
+          var ctx = document.getElementById('pie-chart').getContext('2d');
+          var pieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: labels,
+              datasets: [{
+                data: data,
+                backgroundColor: backgroundColors
+              }]
+            },
+            options: {
+              responsive: true, // Make the chart responsive (resize based on container)
+              maintainAspectRatio: false, // Allow the chart to resize freely
+              legend: {
+                display: true, // Display legend
+                labels: {
+                  fontColor: '#333', // Set legend label font color
+                  fontSize: 12, // Set legend label font size
+                  fontFamily: 'Arial, sans-serif', // Set legend label font family
+                  fontWeight: 'bold' // Make legend label font bold
+                }
+              },
+              title: {
+                display: true, // Display title
+                text: 'Meter Counts', // Set title text
+                fontSize: 16, // Set title font size
+                fontColor: '#333', // Set title font color
+                fontFamily: 'Arial, sans-serif', // Set title font family
+                fontWeight: 'bold' // Make title font bold
+              }
+            }
+          });
+        }
+
+
+        // Call fetchAndRenderPieChart function to fetch data and render the pie chart on page load
+        $(document).ready(function () {
+          fetchAndRenderPieChart();
+        });
+
+      </script>
+
+
+      <footer class="footer pt-3  ">
+        <div class="container-fluid">
+          <div class="row align-items-center justify-content-lg-between">
+            <div class="col-lg-6 mb-lg-0 mb-4">
+
+            </div>
+
+          </div>
+        </div>
+      </footer>
+
   </main>
   <div class="fixed-plugin">
     <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">

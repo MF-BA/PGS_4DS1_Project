@@ -46,6 +46,14 @@ def get_injector_codes():
     # Return the list of unique meter codes as JSON
     return jsonify(unique_injector_codes)
 
+@app.route('/get_tanks_codes', methods=['GET'])
+def get_tanks_codes():
+    # Retrieve unique meter codes from MongoDB
+    unique_tank_codes = tanks_leaks_collection.distinct("TANK_CODE")
+
+    # Return the list of unique meter codes as JSON
+    return jsonify(unique_tank_codes)
+
 @app.route('/inventory_management')
 def inventory_management():
    return render_template('Inventory_management.html')
@@ -218,6 +226,8 @@ def meter_record():
         flash('Error: Meter not added.', 'danger')
 
     return redirect(url_for('meters_monitoring'))
+
+
 
 @app.route('/injector_record', methods=['POST'])
 def injector_record():
