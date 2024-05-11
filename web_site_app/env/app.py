@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, url_for, request, redirect,session,flash
 from equipement import cluster_injector_data,cluster_tanks_data,cluster_meter_data
 from flask import Flask, render_template, url_for, request,jsonify
 from equipement import cluster_meter_data
@@ -22,6 +22,8 @@ import math
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from collections import defaultdict  # Import defaultdict from collections module
 import matplotlib.pyplot as plt
+from flask_pymongo import PyMongo
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'fuel_vision_Project_PGS'
@@ -40,21 +42,66 @@ delivery_collection = db['Delivery']
 delivery_detailed_collection = db['Delivery_detailed']
 destination_collection = db['Destinations']
 Orders = db['Orders']
+users=db['Users']
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        user = users.find_one({'email': request.form['email']})
+
+        if user and check_password_hash(user['password'], request.form['password']):
+            # Authentication success
+            session['user_id'] = str(user['_id'])
+            session['user_name'] = user['last_name']
+            return redirect(url_for('dashboard'))
+        else:
+            # Authentication fails
+            flash('Invalid username or password', 'danger')
+            return redirect(url_for('index'))
+
     return render_template('sign-in.html')
+
+@app.route('/sign_up', methods=['GET', 'POST'])
+def sign_up():
+    if request.method == 'POST':
+        #Users=users.find()
+        existing_user = users.find_one({'email': request.form['email']})
+
+        if existing_user is None:
+            # Here we use the default method, which is 'pbkdf2:sha256'
+            hashed_password = generate_password_hash(request.form['password'])
+            users.insert_one({
+                'first_name': request.form['first_name'],
+                'last_name': request.form['last_name'],
+                'email': request.form['email'],
+                'password': hashed_password
+            })
+            return redirect(url_for('index'))  # Make sure this is the intended redirect
+        else:
+            flash('That email already exists!','danger')  # Use a category 'error' for styling if desired
+            return redirect(url_for('sign_up'))  # Redirect back to the sign-up page
+
+    return render_template('sign-up.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)  # Remove user_id from session
+    return redirect(url_for('index'))
 
 @app.route('/dashboard')
 def dashboard():
-   return render_template('Dashboard.html')
+    if 'user_id' not in session:
+        # Flash a message that you'll use in the login page
+        flash('You must be logged in to continue.','danger')
+        # Redirect to login page if the user is not logged in
+        return redirect(url_for('index', next=request.url))
+    return render_template('Dashboard.html')
 
-@app.route('/sign_up')
-def sign_up():
-    return render_template('sign-up.html')
 
 @app.route('/get_meter_codes', methods=['GET'])
 def get_meter_codes():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     # Retrieve unique meter codes from MongoDB
     unique_meter_codes = meter_collection.distinct("METER_CODE")
 
@@ -63,6 +110,8 @@ def get_meter_codes():
 
 @app.route('/get_injector_codes', methods=['GET'])
 def get_injector_codes():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))    
     # Retrieve unique meter codes from MongoDB
     unique_injector_codes = injector_collection.distinct("INJECTOR_CODE")
 
@@ -71,6 +120,8 @@ def get_injector_codes():
 
 @app.route('/get_tanks_codes', methods=['GET'])
 def get_tanks_codes():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     # Retrieve unique meter codes from MongoDB
     unique_tank_codes = tanks_leaks_collection.distinct("TANK_CODE")
 
@@ -79,15 +130,21 @@ def get_tanks_codes():
 
 @app.route('/inventory_management')
 def inventory_management():
-   return render_template('Inventory_management.html')
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))   
+    return render_template('Inventory_management.html')
 
 @app.route('/tanks_management')
 def tanks_management():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     tanks_data = pd.DataFrame(list(tanks.find()))  # Retrieve orders data from MongoDB
     return render_template('Tank_management.html', tanks_data=tanks_data)
 
 @app.route('/all_tanks/tanks_information')
 def tanks_information():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
      # Retrieve tanks data from MongoDB and convert it into a DataFrame
     tanks_data = pd.DataFrame(list(tanks.find()))
     tanks_inf = pd.DataFrame(list(tanks_info.find()))
@@ -97,6 +154,8 @@ def tanks_information():
 
 @app.route('/all_tanks/<tank_code>')
 def tank(tank_code):
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     # Retrieve tanks data from MongoDB and convert it into a DataFrame
     tanks_data = pd.DataFrame(list(tanks.find()))
     tanks_inf = pd.DataFrame(list(tanks_info.find()))
@@ -285,6 +344,8 @@ def tank(tank_code):
 
 @app.route('/all_tanks')
 def all_tanks():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
      # Retrieve tanks data from MongoDB and convert it into a DataFrame
     tanks_data = pd.DataFrame(list(tanks.find()))
     tanks_inf = pd.DataFrame(list(tanks_info.find()))
@@ -414,6 +475,8 @@ def format_datetime(value, format='%d/%m/%Y'):
     return pd.to_datetime(value, format='%Y%m%d').strftime(format)
 @app.route('/get_meter_counts', methods=['GET'])
 def get_meter_counts():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     # Fetch meter data and perform clustering
     meter_data = pd.DataFrame(list(meter_collection.find()))
     result_df = cluster_meter_data(meter_data)
@@ -443,6 +506,8 @@ def get_meter_counts():
 
 @app.route('/get_injector_counts', methods=['GET'])
 def get_injector_counts():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     # Fetch meter data and perform clustering
     injector_data = pd.DataFrame(list(injector_collection.find()))
     result_df = cluster_injector_data(injector_data)
@@ -472,6 +537,8 @@ def get_injector_counts():
 
 @app.route('/get_tanks_counts', methods=['GET'])
 def get_tanks_counts():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     # Fetch meter data and perform clustering
     tank_data = pd.DataFrame(list(tanks_leaks_collection.find()))
     result_df = cluster_tanks_data(tank_data)
@@ -497,51 +564,60 @@ def get_tanks_counts():
 
 @app.route('/meters_monitoring')
 def meters_monitoring():
-   meter_data = pd.DataFrame(list(meter_collection.find()))
-   result_df = cluster_meter_data(meter_data)
-   meter_groups = {}
-   for cluster_label in range(4):
-      cluster_data = result_df[result_df['cluster'] == cluster_label]
-      meter_codes = cluster_data['METER_CODE'].tolist()
-      meter_groups[f'Cluster {cluster_label}'] = meter_codes
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
+    meter_data = pd.DataFrame(list(meter_collection.find()))
+    result_df = cluster_meter_data(meter_data)
+    meter_groups = {}
+    for cluster_label in range(4):
+        cluster_data = result_df[result_df['cluster'] == cluster_label]
+        meter_codes = cluster_data['METER_CODE'].tolist()
+        meter_groups[f'Cluster {cluster_label}'] = meter_codes
 
-   return render_template('Meters_monitoring.html',meter_groups=meter_groups,meter_result = result_df,meter_data = meter_data)
+    return render_template('Meters_monitoring.html',meter_groups=meter_groups,meter_result = result_df,meter_data = meter_data)
 
 
 @app.route('/injectors_monitoring')
 def injectors_monitoring():
-   injector_data = pd.DataFrame(list(injector_collection.find()))
-   print(injector_data.any)
-   result_df_inj = cluster_injector_data(injector_data)
-   inj_groups = {}
-   for cluster_label2 in range(4):
-      cluster_data2 = result_df_inj[result_df_inj['cluster'] == cluster_label2]
-      inj_codes = cluster_data2['INJECTOR_CODE'].tolist()
-      inj_groups[f'Cluster {cluster_label2}'] = inj_codes
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
+    injector_data = pd.DataFrame(list(injector_collection.find()))
+    print(injector_data.any)
+    result_df_inj = cluster_injector_data(injector_data)
+    inj_groups = {}
+    for cluster_label2 in range(4):
+        cluster_data2 = result_df_inj[result_df_inj['cluster'] == cluster_label2]
+        inj_codes = cluster_data2['INJECTOR_CODE'].tolist()
+        inj_groups[f'Cluster {cluster_label2}'] = inj_codes
 
-   return render_template('Injectors_monitoring.html',inj_groups=inj_groups,injector_result = result_df_inj,injector_data = injector_data,)
+    return render_template('Injectors_monitoring.html',inj_groups=inj_groups,injector_result = result_df_inj,injector_data = injector_data,)
 
 @app.route('/tanks_monitoring')
 def tanks_monitoring():
-   tanks_data = pd.DataFrame(list(tanks_leaks_collection.find()))
-   print(tanks_data.any)
-   result_df_tk_leaks = cluster_tanks_data(tanks_data)
-   tk_leaks_groups = {}
-   for cluster_label2 in range(5):
-      cluster_data2 = result_df_tk_leaks[result_df_tk_leaks['cluster'] == cluster_label2]
-      tk_codes = cluster_data2['TANK_CODE'].tolist()
-      tk_leaks_groups[f'Cluster {cluster_label2}'] = tk_codes
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
+    tanks_data = pd.DataFrame(list(tanks_leaks_collection.find()))
+    print(tanks_data.any)
+    result_df_tk_leaks = cluster_tanks_data(tanks_data)
+    tk_leaks_groups = {}
+    for cluster_label2 in range(5):
+        cluster_data2 = result_df_tk_leaks[result_df_tk_leaks['cluster'] == cluster_label2]
+        tk_codes = cluster_data2['TANK_CODE'].tolist()
+        tk_leaks_groups[f'Cluster {cluster_label2}'] = tk_codes
 
-   return render_template('Tanks_monitoring.html',tanks_groups=tk_leaks_groups,result_tanks=result_df_tk_leaks,leaks_data = tanks_data)
+    return render_template('Tanks_monitoring.html',tanks_groups=tk_leaks_groups,result_tanks=result_df_tk_leaks,leaks_data = tanks_data)
 
 
 @app.route('/equipement_monitoring')
 def equipement_monitoring():
-
-   return render_template('Equipement_monitoring.html')
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
+    return render_template('Equipement_monitoring.html')
 
 @app.route('/meter_record', methods=['POST'])
 def meter_record():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     try:
         meter_code = request.form['meter_code']
         gross_unaccounted = request.form['gross_unaccounted']
@@ -577,6 +653,8 @@ def meter_record():
 
 @app.route('/injector_record', methods=['POST'])
 def injector_record():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     try:
         injector_code = request.form['injector_code']
         frac_unaccounted = request.form['frac_unaccounted']
@@ -610,6 +688,8 @@ def injector_record():
 
 @app.route('/tank_record', methods=['POST'])
 def tank_record():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     try:
         tank_code = request.form['tank_code']
         quantity_difference = request.form['quantity_difference']
@@ -644,6 +724,8 @@ def tank_record():
 
 @app.route('/add_meter', methods=['POST'])
 def add_meter():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     try:
         meter_code = request.form['meter_code']
         gross_unaccounted = request.form['gross_unaccounted']
@@ -677,6 +759,8 @@ def add_meter():
 
 @app.route('/add_tank', methods=['POST'])
 def add_tank():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     try:
         tank_code = request.form['tank_code']
         quantity_difference = request.form['quantity_difference']
@@ -710,6 +794,8 @@ def add_tank():
     
 @app.route('/add_injector', methods=['POST'])
 def add_injector():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     try:
         injector_code = request.form['injector_code']
         frac_unaccounted = request.form['frac_unaccounted']
@@ -744,70 +830,74 @@ def add_injector():
 
 @app.route('/delivery_management/<int:delivery_id>')
 def delivery_display(delivery_id):
-   delivery_detailed_data = pd.DataFrame(list(delivery_detailed_collection.find()))
-   filtered_data = delivery_detailed_data[delivery_detailed_data['DELIVERY_ID'] == delivery_id]
-   departure = [33.1521436, -8.6055754]
-   mapObj = folium.Map(location=departure,
-                        zoom_start=12, width=900, height=500)
-   best_path,best_distance,best_consumption,best_duration,best_score,result,df,best_path_details = TSP_Algorithm(filtered_data , pd.DataFrame(list(destination_collection.find())))
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
+    delivery_detailed_data = pd.DataFrame(list(delivery_detailed_collection.find()))
+    filtered_data = delivery_detailed_data[delivery_detailed_data['DELIVERY_ID'] == delivery_id]
+    departure = [33.1521436, -8.6055754]
+    mapObj = folium.Map(location=departure,
+                            zoom_start=12, width=900, height=500)
+    best_path,best_distance,best_consumption,best_duration,best_score,result,df,best_path_details = TSP_Algorithm(filtered_data , pd.DataFrame(list(destination_collection.find())))
 
-   # Define a list of colors
-   colors = ["red", "green", "blue", "yellow", "orange", "purple"]  # Add more colors if needed
-   # Iterate through each pair of points in the best_path
-   for i in range(len(best_path)-1):
-      try:
-         x = best_path[i]
-         y = best_path[i+1]
-         encoded_polyline = result.loc[(result['DEPARTURE'] == x) & (result['DESTINATION'] == y), 'ENCODED_POLYLINE'].iloc[0]
-         decoded_polyline = polyline.decode(encoded_polyline, 5)
-         #decoded_polyline = [(t[1], t[0]) for t in decoded_polyline]  # Swap latitudes and longitudes
-         route = folium.PolyLine(locations=decoded_polyline, color=colors[i % len(colors)])
-         # Add the route to the map
-         route.add_to(mapObj)
-      except Exception as e:
-         print(f"Error processing route {i+1}: {e}")
-   # Add points to the map
-   geometry = gpd.GeoSeries.from_xy(df['LONGITUDE'], df['LATITUDE'], crs="EPSG:4326")
-   i = 1
-   for _, point in geometry.items():
-      CLIENT = df[df['LATITUDE'] == point.y]
-      if point.y == departure[0] and point.x == departure[1]:
-         folium.Marker(location=[point.y, point.x], popup="<i>"+CLIENT['DESTINATION_NAME'].iloc[0]+"</i>", icon=folium.Icon(icon= 'home' , color='red')).add_to(mapObj)
-      else:
-         folium.Marker(location=[point.y, point.x], popup="<i>"+CLIENT['DESTINATION_NAME'].iloc[0]+"</i>" , icon=folium.Icon(prefix='fa', icon=f"{i}")).add_to(mapObj)
-      i += 1
-   print("///////////")
-   print(best_path_details)
+    # Define a list of colors
+    colors = ["red", "green", "blue", "yellow", "orange", "purple"]  # Add more colors if needed
+    # Iterate through each pair of points in the best_path
+    for i in range(len(best_path)-1):
+        try:
+            x = best_path[i]
+            y = best_path[i+1]
+            encoded_polyline = result.loc[(result['DEPARTURE'] == x) & (result['DESTINATION'] == y), 'ENCODED_POLYLINE'].iloc[0]
+            decoded_polyline = polyline.decode(encoded_polyline, 5)
+            #decoded_polyline = [(t[1], t[0]) for t in decoded_polyline]  # Swap latitudes and longitudes
+            route = folium.PolyLine(locations=decoded_polyline, color=colors[i % len(colors)])
+            # Add the route to the map
+            route.add_to(mapObj)
+        except Exception as e:
+            print(f"Error processing route {i+1}: {e}")
+    # Add points to the map
+    geometry = gpd.GeoSeries.from_xy(df['LONGITUDE'], df['LATITUDE'], crs="EPSG:4326")
+    i = 1
+    for _, point in geometry.items():
+        CLIENT = df[df['LATITUDE'] == point.y]
+        if point.y == departure[0] and point.x == departure[1]:
+            folium.Marker(location=[point.y, point.x], popup="<i>"+CLIENT['DESTINATION_NAME'].iloc[0]+"</i>", icon=folium.Icon(icon= 'home' , color='red')).add_to(mapObj)
+        else:
+            folium.Marker(location=[point.y, point.x], popup="<i>"+CLIENT['DESTINATION_NAME'].iloc[0]+"</i>" , icon=folium.Icon(prefix='fa', icon=f"{i}")).add_to(mapObj)
+        i += 1
+    print("///////////")
+    print(best_path_details)
+        
+    # set iframe width and height
+    mapObj.get_root().width = "1000px"
+    mapObj.get_root().height = "500px"
     
-   # set iframe width and height
-   mapObj.get_root().width = "1000px"
-   mapObj.get_root().height = "500px"
-   
 
-   # derive the iframe content to be rendered in the HTML body
-   iframe = mapObj.get_root()._repr_html_()
-   return render_template('Delivery_dispaly.html', data=departure, iframe=iframe, best_distance=best_distance, best_consumption=best_consumption, best_duration=best_duration,best_path_details=best_path_details,delivery_id=delivery_id,)
+    # derive the iframe content to be rendered in the HTML body
+    iframe = mapObj.get_root()._repr_html_()
+    return render_template('Delivery_dispaly.html', data=departure, iframe=iframe, best_distance=best_distance, best_consumption=best_consumption, best_duration=best_duration,best_path_details=best_path_details,delivery_id=delivery_id,)
 
 @app.route('/delivery_management')
 def delivery_management():
-   delivery_data = pd.DataFrame(list(delivery_collection.find()))
-   delivery_data['LAST_FOLIO_NUMBER'] = pd.to_datetime(delivery_data['LAST_FOLIO_NUMBER'], format='%Y%m%d')
-   delivery_data['FIRST_FOLIO_NUMBER'] = pd.to_datetime(delivery_data['FIRST_FOLIO_NUMBER'], format='%Y%m%d')
-   delivery_data = delivery_data.sort_values(by='LAST_FOLIO_NUMBER', ascending=False)
-   # Pagination
-   page= request.args.get('page',1,type=int)
-   per_page=15
-   start =(page - 1) * per_page
-   end = start + per_page
-   total_items = len(delivery_data)
-   total_pages = math.ceil(total_items / per_page) 
-   # Count deliveries for current month and year
-   current_year = datetime.now().year
-   current_month = datetime.now().month
-   deliveries_this_month = delivery_data[(delivery_data['LAST_FOLIO_NUMBER'].dt.year == current_year) & 
-                                          (delivery_data['LAST_FOLIO_NUMBER'].dt.month == current_month)].shape[0]
-   items_on_page = delivery_data[start:end]
-   return render_template('Delivery_management.html',delivery_data=items_on_page,total_pages=total_pages,page=page,deliveries_this_month=deliveries_this_month)
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
+    delivery_data = pd.DataFrame(list(delivery_collection.find()))
+    delivery_data['LAST_FOLIO_NUMBER'] = pd.to_datetime(delivery_data['LAST_FOLIO_NUMBER'], format='%Y%m%d')
+    delivery_data['FIRST_FOLIO_NUMBER'] = pd.to_datetime(delivery_data['FIRST_FOLIO_NUMBER'], format='%Y%m%d')
+    delivery_data = delivery_data.sort_values(by='LAST_FOLIO_NUMBER', ascending=False)
+    # Pagination
+    page= request.args.get('page',1,type=int)
+    per_page=15
+    start =(page - 1) * per_page
+    end = start + per_page
+    total_items = len(delivery_data)
+    total_pages = math.ceil(total_items / per_page) 
+    # Count deliveries for current month and year
+    current_year = datetime.now().year
+    current_month = datetime.now().month
+    deliveries_this_month = delivery_data[(delivery_data['LAST_FOLIO_NUMBER'].dt.year == current_year) & 
+                                            (delivery_data['LAST_FOLIO_NUMBER'].dt.month == current_month)].shape[0]
+    items_on_page = delivery_data[start:end]
+    return render_template('Delivery_management.html',delivery_data=items_on_page,total_pages=total_pages,page=page,deliveries_this_month=deliveries_this_month)
 
 
 ###########
@@ -843,20 +933,19 @@ def plot_orders_fn():
     return chart_data
 ########
 
-@app.route('/tahfoun')
-def tahfoun():
-    # Fetch unique customer numbers
-    customer_numbers = get_unique_customer_numbers()
-    return render_template('testi.html', customer_numbers=customer_numbers)
 
 @app.route('/get_products/<int:customer_number>')
 def get_products(customer_number):
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     print(customer_number)
     product_numbers = get_unique_product_numbers(customer_number)
     return jsonify({'product_numbers': product_numbers})
 
 @app.route('/selected_values/<int:customer_number>/<int:product_number>')
 def selected_values(customer_number, product_number):
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     orders_data = pd.DataFrame(list(Orders.find()))  
     future_predictions = orders_prediction(orders_data, customer_number, product_number)
     future_predictions_df = pd.DataFrame(future_predictions, columns=['Forecast'])
@@ -866,6 +955,8 @@ def selected_values(customer_number, product_number):
 
 @app.route('/orders_management')
 def orders_management():
+    if 'user_id' not in session:
+        return redirect(url_for('dashboard'))
     orders_data = pd.DataFrame(list(Orders.find()))  
     orders_data['FOLIO_NUMBER']= pd.to_datetime(orders_data['FOLIO_NUMBER'])
     orders_data = orders_data.sort_values(by='FOLIO_NUMBER', ascending=False)
