@@ -9,6 +9,7 @@ from datetime import datetime
 import pandas as pd
 from flask_pymongo import PyMongo
 from statsmodels.tsa.statespace.sarimax import SARIMAX
+from collections import defaultdict  # Import defaultdict from collections module
 import matplotlib.pyplot as plt
 
 app = Flask(__name__)
@@ -74,6 +75,28 @@ def get_unique_product_numbers(customer_number):
     print("Product Numbers:", product_numbers)
     return product_numbers
 ###########
+def get_orders_data():
+    orders_data = pd.DataFrame(list(Orders.find()))
+    orders_data['FOLIO_NUMBER'] = pd.to_datetime(orders_data['FOLIO_NUMBER'])
+    orders_data = orders_data.sort_values(by='FOLIO_NUMBER', ascending=True)
+    return orders_data
+def plot_orders_fn():
+    orders_data = get_orders_data()
+    orders_data = orders_data[orders_data['ORDERED_QUANTITY'] >= 0]
+    start_date = orders_data['FOLIO_NUMBER'].min()
+    end_date = orders_data['FOLIO_NUMBER'].max()
+    date_range = pd.date_range(start=start_date, end=end_date, freq='W')
+    interval_data = defaultdict(int)
+    for index, row in orders_data.iterrows():
+        for date in date_range:
+            if row['FOLIO_NUMBER'] <= date:
+                interval_data[date] += row['ORDERED_QUANTITY']
+                break
+    chart_data = [['Date', 'Ordered Quantity']]
+    for date, quantity in interval_data.items():
+        chart_data.append([date.strftime('%Y-%m-%d'), quantity])
+    return chart_data
+########
 
 @app.route('/tahfoun')
 def tahfoun():
@@ -102,8 +125,9 @@ def orders_management():
     orders_data['FOLIO_NUMBER']= pd.to_datetime(orders_data['FOLIO_NUMBER'])
     orders_data = orders_data.sort_values(by='FOLIO_NUMBER', ascending=False)
     customer_numbers = get_unique_customer_numbers()
-
-    return render_template('Orders_management.html', orders_data=orders_data, datetime=datetime,customer_numbers=customer_numbers)
+    
+    chart_data = plot_orders_fn()
+    return render_template('Orders_management.html', orders_data=orders_data, datetime=datetime,customer_numbers=customer_numbers,chart_data=chart_data)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")

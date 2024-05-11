@@ -19,6 +19,7 @@
 
   <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script type="text/javascript">
     google.charts.load('current', { 'packages': ['corechart'] });
     google.charts.setOnLoadCallback(drawChart);
@@ -399,6 +400,24 @@
     </nav>
     <!-- End Navbar -->
 
+
+
+    
+    <div class="col-lg-12">
+      <div class="card h-100">
+        <div class="card-header pb-0">
+        </div>
+        <div class="card-body p-3 text-center"> <!-- Added text-center class here -->
+          <h2>Orders Plot</h2> <!-- Moved the h2 element inside the card-body -->
+          <canvas id="ordersChart" width="700" height="300"></canvas>
+        </div>
+      </div>
+    </div>
+    
+
+    <br>
+
+
     <div class="col-md-12 mb-lg-0 mb-4">
       <div class="card p-3">
   
@@ -602,6 +621,47 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="../assets/js/soft-ui-dashboard.min.js?v=1.0.3"></script>
+
+    <script>
+      // Define the data and configuration for the chart
+      const chartData = {
+          labels: [
+              {% for data_row in chart_data[1:] %}
+                  "{{ data_row[0] }}",
+              {% endfor %}
+          ],
+          datasets: [{
+              label: 'Ordered Quantity in liters',
+              data: [
+                  {% for data_row in chart_data[1:] %}
+                      {{ data_row[1] }},
+                  {% endfor %}
+              ],
+              borderColor: 'rgb(1, 173, 175)', // Updated color
+              backgroundColor: 'rgba(1, 173, 175, 0.5)',  // Semi-transparent red color
+              pointStyle: 'circle',
+              pointRadius: 5,
+              pointHoverRadius: 8
+          }]
+      };
+
+      const chartConfig = {
+          type: 'line',
+          data: chartData,
+          options: {
+              responsive: true,
+              plugins: {
+                  title: {
+                      display: true,
+                      text: (ctx) => '',
+                  }
+              }
+          }
+      };
+      // Create the chart instance
+      const ordersChart = new Chart(document.getElementById('ordersChart').getContext('2d'), chartConfig);
+  </script>
+
 </body>
 
 </html>
