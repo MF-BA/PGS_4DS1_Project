@@ -95,7 +95,135 @@ def dashboard():
         flash('You must be logged in to continue.','danger')
         # Redirect to login page if the user is not logged in
         return redirect(url_for('index', next=request.url))
-    return render_template('Dashboard.html')
+    
+    tanks_data = pd.DataFrame(list(tanks.find()))
+    tanks_inf = pd.DataFrame(list(tanks_info.find()))
+     ##################################################################################
+    selected_tank_inf_100 = tanks_data[tanks_data['TANK_CODE'] == 'TK-100']
+    selected_tank_inf_100 = selected_tank_inf_100.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_100 = selected_tank_inf_100.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_100 = sorted_tank_inf_100.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_100 = sorted_tank_inf_100.iloc[0]
+    last_date_100 = last_date_row_100['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_100 = last_date_row_100['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    selected_tank_inf_200 = tanks_data[tanks_data['TANK_CODE'] == 'TK-200']
+    selected_tank_inf_200 = selected_tank_inf_200.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_200 = selected_tank_inf_200.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_200 = sorted_tank_inf_200.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_200 = sorted_tank_inf_200.iloc[0]
+    last_date_200 = last_date_row_200['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_200 = last_date_row_200['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    selected_tank_inf_300 = tanks_data[tanks_data['TANK_CODE'] == 'TK-300']
+    selected_tank_inf_300 = selected_tank_inf_300.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_300 = selected_tank_inf_300.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_300 = sorted_tank_inf_300.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_300 = sorted_tank_inf_300.iloc[0]
+    last_date_300 = last_date_row_300['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_300 = last_date_row_300['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    selected_tank_inf_400 = tanks_data[tanks_data['TANK_CODE'] == 'TK-400']
+    selected_tank_inf_400 = selected_tank_inf_400.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_400 = selected_tank_inf_400.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_400 = sorted_tank_inf_400.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_400 = sorted_tank_inf_400.iloc[0]
+    last_date_400 = last_date_row_400['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_400 = last_date_row_400['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    selected_tank_inf_500 = tanks_data[tanks_data['TANK_CODE'] == 'TK-500']
+    selected_tank_inf_500 = selected_tank_inf_500.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_500 = selected_tank_inf_500.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_500 = sorted_tank_inf_500.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_500 = sorted_tank_inf_500.iloc[0]
+    last_date_500 = last_date_row_500['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_500 = last_date_row_500['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    selected_tank_inf_600 = tanks_data[tanks_data['TANK_CODE'] == 'TK-600']
+    selected_tank_inf_600 = selected_tank_inf_600.drop(columns=['_id'])
+        # Sort the filtered DataFrame by date in descending order
+    sorted_tank_inf_600 = selected_tank_inf_600.sort_values(by='FOLIO_NUMBER', ascending=False)
+        
+        # Get the last date from the sorted DataFrame
+    last_date_600 = sorted_tank_inf_600.iloc[0]['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+         # Get the last date from the sorted DataFrame
+    last_date_row_600 = sorted_tank_inf_600.iloc[0]
+    last_date_600 = last_date_row_600['FOLIO_NUMBER'].strftime('%Y-%m-%d')
+    last_closing_physical_600 = last_date_row_600['CLOSING_PHYSICAL']  # Assuming 'closing_physical' is the column name
+    ##################################################################################
+    delivery_data = pd.DataFrame(list(delivery_collection.find()))
+    delivery_data['LAST_FOLIO_NUMBER'] = pd.to_datetime(delivery_data['LAST_FOLIO_NUMBER'], format='%Y%m%d')
+    delivery_data['FIRST_FOLIO_NUMBER'] = pd.to_datetime(delivery_data['FIRST_FOLIO_NUMBER'], format='%Y%m%d')
+    delivery_data = delivery_data.sort_values(by='LAST_FOLIO_NUMBER', ascending=False)
+    # Pagination
+    page= request.args.get('page',1,type=int)
+    per_page=200
+    start =(page - 1) * per_page
+    end = start + per_page
+    total_items = len(delivery_data)
+    total_pages = math.ceil(total_items / per_page) 
+    # Count deliveries for current month and year
+    current_year = datetime.now().year
+    current_month = datetime.now().month
+    deliveries_this_month = delivery_data[(delivery_data['LAST_FOLIO_NUMBER'].dt.year == current_year) & 
+                                            (delivery_data['LAST_FOLIO_NUMBER'].dt.month == current_month)].shape[0]
+    items_on_page = delivery_data[start:end]
+    chart_data = plot_orders_fn()
+    injector_data = pd.DataFrame(list(injector_collection.find()))
+    print(injector_data.any)
+    result_df_inj = cluster_injector_data(injector_data)
+    inj_groups = {}
+    for cluster_label2 in range(4):
+        cluster_data2 = result_df_inj[result_df_inj['cluster'] == cluster_label2]
+        inj_codes = cluster_data2['INJECTOR_CODE'].tolist()
+        inj_groups[f'Cluster {cluster_label2}'] = inj_codes
+
+    # Retrieve the unique tank codes
+    unique_tank_codes = tanks_leaks_collection.distinct("TANK_CODE")
+
+    # Count the number of unique tank codes
+    num_unique_tank_codes = len(unique_tank_codes)
+
+    # Retrieve the unique tank codes
+    unique_injector_codes = injector_collection.distinct("INJECTOR_CODE")
+
+    # Count the number of unique tank codes
+    num_unique_injector_codes = len(unique_injector_codes)
+
+    # Retrieve the unique tank codes
+    unique_meter_codes = meter_collection.distinct("METER_CODE")
+
+    # Count the number of unique tank codes
+    num_unique_meter_codes = len(unique_meter_codes)
+
+    # Retrieve the unique tank codes
+    nbr_orders = Orders.count_documents({})
+
+
+
+    # Pass the decomposed dates to the template
+    return render_template('Dashboard.html',delivery_data=items_on_page,total_pages=total_pages,page=page,deliveries_this_month=deliveries_this_month, tanks_inf=tanks_inf,last_closing_physical_100=last_closing_physical_100,last_closing_physical_200=last_closing_physical_200,last_closing_physical_300=last_closing_physical_300,
+                            last_closing_physical_400=last_closing_physical_400,last_closing_physical_500=last_closing_physical_500,last_closing_physical_600=last_closing_physical_600,chart_data=chart_data,inj_groups=inj_groups,injector_result = result_df_inj,injector_data = injector_data,tot_nbr_tanks = num_unique_tank_codes,tot_nbr_injectors=num_unique_injector_codes,tot_nbr_meters = num_unique_meter_codes,tot_nbr_orders=nbr_orders)
 
 
 @app.route('/get_meter_codes', methods=['GET'])
@@ -340,6 +468,7 @@ def tank(tank_code):
     #print(days_with_best_condition)
 
     #return render_template('tanktest.html', tanks_inf=tanks_inf, tanknb=tanknb, shell_capacity=tank_shell_capacity,product_name=terminal_product_number,tank_name=tank_name,last_date=last_date,last_closing_physical=last_closing_physical,days_with_best_condition=days_with_best_condition,tank_names=tank_names)
+
 
 
 @app.route('/all_tanks')
@@ -590,7 +719,7 @@ def injectors_monitoring():
         inj_codes = cluster_data2['INJECTOR_CODE'].tolist()
         inj_groups[f'Cluster {cluster_label2}'] = inj_codes
 
-    return render_template('Injectors_monitoring.html',inj_groups=inj_groups,injector_result = result_df_inj,injector_data = injector_data,)
+    return render_template('Injectors_monitoring.html',inj_groups=inj_groups,injector_result = result_df_inj,injector_data = injector_data)
 
 @app.route('/tanks_monitoring')
 def tanks_monitoring():
@@ -886,7 +1015,7 @@ def delivery_management():
     delivery_data = delivery_data.sort_values(by='LAST_FOLIO_NUMBER', ascending=False)
     # Pagination
     page= request.args.get('page',1,type=int)
-    per_page=15
+    per_page=1000
     start =(page - 1) * per_page
     end = start + per_page
     total_items = len(delivery_data)
@@ -898,8 +1027,6 @@ def delivery_management():
                                             (delivery_data['LAST_FOLIO_NUMBER'].dt.month == current_month)].shape[0]
     items_on_page = delivery_data[start:end]
     return render_template('Delivery_management.html',delivery_data=items_on_page,total_pages=total_pages,page=page,deliveries_this_month=deliveries_this_month)
-
-
 ###########
 def get_unique_customer_numbers():
     customer_numbers = Orders.distinct("CUSTOMER_NUMBER")
@@ -957,7 +1084,7 @@ def selected_values(customer_number, product_number):
 def orders_management():
     if 'user_id' not in session:
         return redirect(url_for('dashboard'))
-    orders_data = pd.DataFrame(list(Orders.find()))  
+    orders_data = pd.DataFrame(list(Orders.find()))
     orders_data['FOLIO_NUMBER']= pd.to_datetime(orders_data['FOLIO_NUMBER'])
     orders_data = orders_data.sort_values(by='FOLIO_NUMBER', ascending=False)
     customer_numbers = get_unique_customer_numbers()

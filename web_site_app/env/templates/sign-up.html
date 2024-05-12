@@ -43,40 +43,7 @@
     <div class="row">
       <div class="col-12">
         <!-- Navbar -->
-        <nav
-          class="navbar navbar-expand-lg blur blur-rounded top-0 z-index-3 shadow position-absolute my-3 py-2 start-0 end-0 mx-4">
-          <div class="container-fluid">
-            <a class="navbar-brand font-weight-bolder ms-lg-0 ms-3 " href="{{url_for('index')}}">
-              Fuel Vision
-            </a>
-            <button class="navbar-toggler shadow-none ms-2" type="button" data-bs-toggle="collapse"
-              data-bs-target="#navigation" aria-controls="navigation" aria-expanded="false"
-              aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon mt-2">
-                <span class="navbar-toggler-bar bar1"></span>
-                <span class="navbar-toggler-bar bar2"></span>
-                <span class="navbar-toggler-bar bar3"></span>
-              </span>
-            </button>
-            <div class="collapse navbar-collapse" id="navigation">
-              <ul class="navbar-nav mx-auto">
-                <li class="nav-item">
-                  <a class="nav-link me-2" href="{{url_for('sign_up')}}">
-                    <i class="fas fa-user-circle opacity-6 text-dark me-1"></i>
-                    Sign Up
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link me-2" href="{{url_for('index')}}">
-                    <i class="fas fa-key opacity-6 text-dark me-1"></i>
-                    Sign In
-                  </a>
-                </li>
-              </ul>
-
-            </div>
-          </div>
-        </nav>
+        
         <!-- End Navbar -->
       </div>
     </div>
@@ -102,7 +69,7 @@
               <h5>Register</h5>
             </div>
             <div class="card-body">
-              <form role="form text-left" method="POST" action="{{ url_for('sign_up') }}">
+              <form role="form" method="POST" action="{{ url_for('sign_up') }}" onsubmit="return validateEmail()">
                 <div class="mb-3">
                   <input type="text" class="form-control" placeholder="Name" aria-label="Name" name="first_name"
                     required>
@@ -113,6 +80,8 @@
                 </div>
                 <div class="mb-3">
                   <input type="email" class="form-control" placeholder="Email" aria-label="Email" name="email" required>
+                  <!-- Error message for invalid email format -->
+                  <div id="emailError" class="invalid-feedback" style="display: none;">Email domain must be @pgs.tn or @esprit.tn</div>
                 </div>
                 <div class="mb-3">
                   <input type="password" class="form-control" placeholder="Password" aria-label="Password"
@@ -121,21 +90,48 @@
                 <div class="form-check form-check-info text-left">
                   <input class="form-check-input" type="checkbox" value="" id="agreeCheckbox" required>
                   <label class="form-check-label" for="agreeCheckbox">
-                      I agree the <a href="javascript:;" class="text-dark font-weight-bolder">Terms and Conditions</a>
+                    I agree the <a href="javascript:;" class="text-dark font-weight-bolder">Terms and Conditions</a>
                   </label>
                   <div class="invalid-feedback">You must agree to the Terms and Conditions.</div>
                 </div>
                 <script>
-                  document.addEventListener("DOMContentLoaded", function() {
-                      const agreeCheckbox = document.getElementById('agreeCheckbox');
-                      const signUpButton = document.getElementById('signUpButton');
-              
-                      agreeCheckbox.addEventListener('change', function() {
-                          signUpButton.disabled = !agreeCheckbox.checked;
-                      });
+                  document.addEventListener("DOMContentLoaded", function () {
+                    const agreeCheckbox = document.getElementById('agreeCheckbox');
+                    const signUpButton = document.getElementById('signUpButton');
+
+                    agreeCheckbox.addEventListener('change', function () {
+                      signUpButton.disabled = !agreeCheckbox.checked;
+                    });
                   });
                 </script>
-              
+                <script>
+                  function validateEmail() {
+                    var emailInput = document.querySelector('input[name="email"]');
+                    var emailError = document.getElementById('emailError');
+                    var email = emailInput.value.trim().toLowerCase();
+
+                    if (!(email.endsWith('@pgs.tn') || email.endsWith('@esprit.tn'))) {
+                      emailInput.classList.add('is-invalid');
+                      emailError.style.display = 'block';
+                      return false;
+                    }
+
+                    emailInput.classList.remove('is-invalid');
+                    emailError.style.display = 'none';
+                    return true;
+                  }
+
+                  // Add an event listener to the form to call the validateEmail function before form submission
+                  document.querySelector('form').addEventListener('submit', function (event) {
+                    if (!validateEmail()) {
+                      // Prevent the default form submission if the email is invalid
+                      event.preventDefault();
+                      // Optionally, you can display a custom alert or message here
+                      alert('Email domain must be @pgs.tn or @esprit.tn');
+                    }
+                  });
+                </script>
+
                 <div class="text-center">
                   {% with messages = get_flashed_messages(with_categories=true) %}
                   {% if messages %}
@@ -169,26 +165,7 @@
   <footer class="footer py-5">
     <div class="container">
       <div class="row">
-        <div class="col-lg-8 mb-4 mx-auto text-center">
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
-            Company
-          </a>
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
-            About Us
-          </a>
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
-            Team
-          </a>
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
-            Products
-          </a>
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
-            Blog
-          </a>
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
-            Pricing
-          </a>
-        </div>
+        
         <div class="col-lg-8 mx-auto text-center mb-4 mt-2">
           <a href="javascript:;" target="_blank" class="text-secondary me-xl-4 me-4">
             <span class="text-lg fab fa-dribbble"></span>

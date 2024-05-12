@@ -1,4 +1,4 @@
-import leafmap.kepler as leafmap
+#import leafmap.kepler as leafmap
 import pandas as pd
 import os
 from shapely.geometry import Point

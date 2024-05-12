@@ -48,7 +48,10 @@
 
     <!-- Favicon -->
     <link href="img/favicon.ico" rel="icon">
-
+    <link rel="icon" type="image/png" href="{{ url_for('static',filename='img/logo_icon.png')}}">
+    <title>
+      Fuel Vision
+    </title>
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -103,7 +106,7 @@
     var options = {
       title: 'Future Predictions for ' + tankName, // Set dynamic title
       hAxis: {title: 'Date',  titleTextStyle: {color: '#01ADAF'}},
-      vAxis: {title: 'Forecast', minValue: 0},
+      vAxis: {title: 'Product Quantity', minValue: 0},
       colors: ['#01ADAF'], // Set color for the chart
       legend: {position: 'none'}, // Hide legend if needed
     };

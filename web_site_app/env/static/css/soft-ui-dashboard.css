@@ -9844,6 +9844,30 @@ fieldset:disabled .btn {
 .text-info {
   color: #17c1e8 !important;
 }
+.text-welcome-sign {
+  background: linear-gradient(to right, #003C57, #017197);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.slide-left {
+  animation: slideFromRight 1s forwards; /* Adjust animation duration as needed */
+  opacity: 0;
+  position: absolute;
+  bottom: 30px;
+  transform: translateX(100%);
+}
+
+@keyframes slideFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 
 .text-warning {
   color: #fbcf33 !important;
@@ -21593,7 +21617,7 @@ hr.horizontal.gray-light {
 }
 
 .sidenav-header {
-  height: 4.875rem;
+  height: 6rem;
 }
 
 .sidenav-footer .card.card-background:after {
