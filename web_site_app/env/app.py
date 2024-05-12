@@ -1084,12 +1084,14 @@ def selected_values(customer_number, product_number):
 def orders_management():
     if 'user_id' not in session:
         return redirect(url_for('dashboard'))
+    chart_data = plot_orders_fn()
     orders_data = pd.DataFrame(list(Orders.find()))
+    
     orders_data['FOLIO_NUMBER']= pd.to_datetime(orders_data['FOLIO_NUMBER'])
     orders_data = orders_data.sort_values(by='FOLIO_NUMBER', ascending=False)
     customer_numbers = get_unique_customer_numbers()
     
-    chart_data = plot_orders_fn()
+    
     return render_template('Orders_management.html', orders_data=orders_data, datetime=datetime,customer_numbers=customer_numbers,chart_data=chart_data)
 
 if __name__ == "__main__":
