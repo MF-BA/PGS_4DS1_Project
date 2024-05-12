@@ -220,9 +220,9 @@ def dashboard():
     nbr_orders = Orders.count_documents({})
 
 
-
+    print(request.user_agent.string)
     # Pass the decomposed dates to the template
-    return render_template('Dashboard.html',delivery_data=items_on_page,total_pages=total_pages,page=page,deliveries_this_month=deliveries_this_month, tanks_inf=tanks_inf,last_closing_physical_100=last_closing_physical_100,last_closing_physical_200=last_closing_physical_200,last_closing_physical_300=last_closing_physical_300,
+    return render_template('Dashboard.html',user_agent = request.user_agent.string ,delivery_data=items_on_page,total_pages=total_pages,page=page,deliveries_this_month=deliveries_this_month, tanks_inf=tanks_inf,last_closing_physical_100=last_closing_physical_100,last_closing_physical_200=last_closing_physical_200,last_closing_physical_300=last_closing_physical_300,
                             last_closing_physical_400=last_closing_physical_400,last_closing_physical_500=last_closing_physical_500,last_closing_physical_600=last_closing_physical_600,chart_data=chart_data,inj_groups=inj_groups,injector_result = result_df_inj,injector_data = injector_data,tot_nbr_tanks = num_unique_tank_codes,tot_nbr_injectors=num_unique_injector_codes,tot_nbr_meters = num_unique_meter_codes,tot_nbr_orders=nbr_orders)
 
 
@@ -1084,14 +1084,12 @@ def selected_values(customer_number, product_number):
 def orders_management():
     if 'user_id' not in session:
         return redirect(url_for('dashboard'))
-    chart_data = plot_orders_fn()
     orders_data = pd.DataFrame(list(Orders.find()))
-    
     orders_data['FOLIO_NUMBER']= pd.to_datetime(orders_data['FOLIO_NUMBER'])
     orders_data = orders_data.sort_values(by='FOLIO_NUMBER', ascending=False)
     customer_numbers = get_unique_customer_numbers()
     
-    
+    chart_data = plot_orders_fn()
     return render_template('Orders_management.html', orders_data=orders_data, datetime=datetime,customer_numbers=customer_numbers,chart_data=chart_data)
 
 if __name__ == "__main__":

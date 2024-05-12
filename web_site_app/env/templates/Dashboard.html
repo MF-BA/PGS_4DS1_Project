@@ -252,6 +252,64 @@
     </nav>
     <!-- End Navbar -->
     <div class="container-fluid py-4">
+        {% if 'Mobile' in user_agent %}
+      <div class="row">
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-12">
+                  <div class="numbers">
+                    <p class="text-center mb-0 text-capitalize font-weight-bold"><a href="{{url_for('all_tanks')}}" class="text-decoration-none text-dark" style="font-size: 1.5rem; font-weight: bold;">Inventory Management</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-12">
+                  <div class="numbers">
+                    <p class="text-center mb-0 text-capitalize font-weight-bold"><a href="{{url_for('orders_management')}}" class="text-decoration-none text-dark" style="font-size: 1.5rem; font-weight: bold;">Orders Management</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-12">
+                  <div class="numbers">
+                    <p class="text-center mb-0 text-capitalize font-weight-bold"><a href="{{url_for('delivery_management')}}" class="text-decoration-none text-dark" style="font-size: 1.5rem; font-weight: bold;">Delivery Management</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-sm-6">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-12">
+                  <div class="numbers">
+                    <p class="text-center mb-0 text-capitalize font-weight-bold"><a href="{{url_for('equipement_monitoring')}}" class="text-decoration-none text-dark" style="font-size: 1.5rem; font-weight: bold;">Equipment Monitoring</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br>
+        {% endif %}
+      
       <div class="row">
         <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
           <div class="card">
