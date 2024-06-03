@@ -1,19 +1,19 @@
 TANK_CODE,successive_less_minus20,successive_less_minus20_abs_sum,last_date_less_minus20,max_folio_date,repaired,cluster
-TK-100,1,21,309,309,1,0
-TK-101,4,97,310,310,1,3
-TK-102,2,371,352,352,1,4
-TK-103,1,23,298,298,1,0
-TK-104,1,25,321,321,1,0
-TK-105,1,635,425,425,1,2
-TK-106,1,91,314,314,1,0
-TK-200,0,0,0,No less than -20 values found,0,1
-TK-201,1,61,375,375,1,0
-TK-202,1,21,302,302,1,0
-TK-203,2,58,300,300,1,0
-TK-205,1,23,359,359,1,0
-TK-300,0,0,0,No less than -20 values found,0,1
-TK-305,0,0,0,No less than -20 values found,0,1
-TK-306,0,0,0,No less than -20 values found,0,1
-TK-400,0,0,0,No less than -20 values found,0,1
-TK-500,1,39,958,958,1,3
-TK-600,0,0,0,No less than -20 values found,0,1
+TK-100,1,21,310,310,1,1
+TK-101,4,97,311,311,1,3
+TK-102,2,371,353,353,1,4
+TK-103,1,23,299,299,1,1
+TK-104,1,25,322,322,1,1
+TK-105,1,635,426,426,1,2
+TK-106,1,91,315,315,1,1
+TK-200,0,0,0,No less than -20 values found,0,0
+TK-201,1,61,376,376,1,1
+TK-202,1,21,303,303,1,1
+TK-203,2,58,301,301,1,1
+TK-205,1,23,360,360,1,1
+TK-300,0,0,0,No less than -20 values found,0,0
+TK-305,0,0,0,No less than -20 values found,0,0
+TK-306,0,0,0,No less than -20 values found,0,0
+TK-400,0,0,0,No less than -20 values found,0,0
+TK-500,1,39,959,959,1,3
+TK-600,0,0,0,No less than -20 values found,0,0
